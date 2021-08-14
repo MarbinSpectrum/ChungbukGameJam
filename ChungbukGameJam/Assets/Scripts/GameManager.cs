@@ -2,6 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+internal static class DragDelegate
+{
+    public delegate void Dele();
+    static event Dele BlockCheck;
+
+    public static void CallInvoke()
+    {
+        BlockCheck?.Invoke();
+    } 
+
+    public static void SubscribeBlockCheck(Dele dele)
+    {
+        BlockCheck += dele;
+    }
+}
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -17,6 +33,8 @@ public class GameManager : MonoBehaviour
         Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
         createMap.CreateMAP();
         map_size = createMap.map_size;
+
+        DragDelegate.SubscribeBlockCheck(SettingPos);
     }
 
     public static Vector2 ConvertTileVec(Vector2 v)
@@ -32,15 +50,13 @@ public class GameManager : MonoBehaviour
         return v;
     }
 
-
-
-    public void Update()
+    public void SettingPos()
     {
         bool[,] tileState = new bool[map_size.x, map_size.y];
         if (Block.nowBlock)
         {
             for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
-                for (int c = Mathf.Max(0,(int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
+                for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
                 {
                     int ac = c - (int)bv.x;
                     int ar = r - (int)bv.y;
@@ -62,4 +78,34 @@ public class GameManager : MonoBehaviour
                     Tile[c, r].Normal();
             }
     }
+
+
+    // public void Update()
+    // {
+    //     bool[,] tileState = new bool[map_size.x, map_size.y];
+    //     if (Block.nowBlock)
+    //     {
+    //         for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
+    //             for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
+    //             {
+    //                 int ac = c - (int)bv.x;
+    //                 int ar = r - (int)bv.y;
+    //                 if (ac < 0 || ar < 0 || ac >= Block.nowBlock.block_size || ar >= Block.nowBlock.block_size)
+    //                     continue;
+    //                 if (Block.nowBlock.MAP[ac, ar])
+    //                     tileState[c, r] = true;
+
+    //             }
+    //     }
+
+
+    //     for (int r = 0; r < map_size.y; r++)
+    //         for (int c = 0; c < map_size.x; c++)
+    //         {
+    //             if (tileState[c, r])
+    //                 Tile[c, r].Highight();
+    //             else
+    //                 Tile[c, r].Normal();
+    //         }
+    // }
 }

@@ -7,7 +7,7 @@ public class Block : SerializedMonoBehaviour
 {
     public static Block nowBlock;
     private int Block_size = 1;
-    [Title("Å©±â")]
+    [Title("Å©ï¿½ï¿½")]
     [GUIColor(0, 1, 0)]
     [HideLabel]
     [SerializeField]
@@ -22,7 +22,7 @@ public class Block : SerializedMonoBehaviour
         }
     }
 
-    [Title("¸ð¾ç")]
+    [Title("ï¿½ï¿½ï¿½")]
     public bool[,] MAP;
 
     /////////////////////////////////////////////////////////////////
@@ -66,6 +66,8 @@ public class Block : SerializedMonoBehaviour
         transform.position = v + offset;
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
         nowBlock = this;
+
+        DragDelegate.CallInvoke();
     }
 
     private void OnMouseUp()
