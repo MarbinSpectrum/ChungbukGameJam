@@ -47,6 +47,23 @@ public class GameManager : MonoBehaviour
         victoryDele += CheckVictory;
     }
 
+    public static Vector2 ConvertCeilVec(Vector2 v)
+    {
+        if (GameManager.map_size.x % 2 == 1)
+            v.x += 0.5f;
+        v.x = Mathf.FloorToInt(v.x);
+        if (GameManager.map_size.x % 2 == 0)
+            v.x += 0.5f;
+
+        if (GameManager.map_size.y % 2 == 1)
+            v.y += 0.5f;
+        v.y = Mathf.FloorToInt(v.y);
+        if (GameManager.map_size.y % 2 == 0)
+            v.y += 0.5f;
+        return v;
+    }
+
+
     public static Vector2 ConvertTileVec(Vector2 v)
     {
         v.x += (CreateMap.OBJ_X * (map_size.x - 1)) * 0.5f;
@@ -71,9 +88,6 @@ public class GameManager : MonoBehaviour
             for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
                 for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
                 {
-                    // c, r: 월드 좌표에 해당되는 타일의 위치
-                    
-                    if(!Block.nowBlock.MAP[c,r]) continue;
 
                     // 타일맵 좌표
                     int ac = c - (int)bv.x;
@@ -84,10 +98,12 @@ public class GameManager : MonoBehaviour
                         continue;
                     }
 
+                    // c, r: 월드 좌표에 해당되는 타일의 위치          
+                    if(!Block.nowBlock.MAP[ac,ar]) 
+                        continue;
+
                     if (Block.nowBlock.MAP[ac, ar])
-                    {
                         tileState[c, r] = true;
-                    }
 
                     if (isRelease)
                     {
