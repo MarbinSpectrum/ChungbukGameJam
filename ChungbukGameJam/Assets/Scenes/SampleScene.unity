@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2239ab678fd87f40b3594d5da933dee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockData: []
   landingCheckTiles: []
 --- !u!4 &5670798
 Transform:
@@ -240,7 +241,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 7482667652216324306, guid: 123d19c098844374d874f3dbd1f20162, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -278,9 +279,9 @@ BoxCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
-    border: {x: 0.049999997, y: 0.049999997, z: 0.049999997, w: 0.049999997}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.16, y: 0.16}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -394,7 +395,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  basePos: {x: 0, y: 0}
 --- !u!212 &247049852
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -590,7 +590,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  basePos: {x: 0, y: 0}
 --- !u!212 &251271933
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1009,7 +1008,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  basePos: {x: 0, y: 0}
 --- !u!212 &588256726
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1474,7 +1472,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  basePos: {x: 0, y: 0}
 --- !u!212 &1986759154
 SpriteRenderer:
   m_ObjectHideFlags: 0

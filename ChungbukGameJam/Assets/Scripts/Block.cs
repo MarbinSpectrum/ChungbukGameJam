@@ -9,7 +9,7 @@ public class Block : SerializedMonoBehaviour
     public const int nowBlockSortNum = -5;
 
     // 다른 블록, 설치 불가능한 지역에 놓여질 때 되돌아갈 위치.
-    public Vector2 basePos;
+    private Vector2 basePos;
 
     public static Block nowBlock;
     private int Block_size = 1;
@@ -39,6 +39,8 @@ public class Block : SerializedMonoBehaviour
     GameObject[,] blocks;
     public void Start()
     {
+        GameManager.instance.blockData.Add(this);
+
         GameObject temp = transform.GetChild(0).gameObject;
         blocks = new GameObject[block_size, block_size];
         for (int r = 0; r < Block_size; r++)
@@ -46,8 +48,7 @@ public class Block : SerializedMonoBehaviour
             {
                 GameObject obj = Instantiate(temp);
                 obj.transform.SetParent(transform);
-                basePos = new Vector3(c * OBJ_X, -r * OBJ_Y, temp.transform.position.z);
-                obj.transform.localPosition = basePos;
+                obj.transform.localPosition = new Vector3(c * OBJ_X, -r * OBJ_Y, temp.transform.position.z);
                 blocks[c, r] = obj;
             }
 
@@ -73,6 +74,7 @@ public class Block : SerializedMonoBehaviour
         if (clickPos == Vector2.zero)
             clickPos = v;
         transform.position = v + offset;
+
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
         nowBlock = this;
 
@@ -84,7 +86,7 @@ public class Block : SerializedMonoBehaviour
     private void OnMouseUp()
     {
         if(nowBlock)
-        nowBlock.GetComponent<SpriteRenderer>().sortingOrder = baseSortNum;
+            nowBlock.GetComponent<SpriteRenderer>().sortingOrder = baseSortNum;
         DragDelegate.CallInvoke(true);
 
         offset = Vector2.zero;
@@ -110,26 +112,72 @@ public class Block : SerializedMonoBehaviour
         return ret;
     }
 
+
+    private bool CanRotate(Vector2 clickPos)
+    {
+        HashSet<Vector2Int> Set = new HashSet<Vector2Int>();
+        List<Vector2Int> list = new List<Vector2Int>();
+        var blockList = GameManager.instance.blockData;
+        foreach(Block b in blockList)
+        {
+            if (b == this)
+                continue;
+            for (int c = 0; c < b.block_size; c++)
+                for (int r = 0; r < b.block_size; r++)
+                    if (b.MAP[c, r])
+                    {
+                        Vector2 mainPos = GameManager.ConvertCeilVec(b.transform.position);
+                        Vector2 temp = new Vector2(c, -r);
+                        Set.Add(new Vector2Int((int)(mainPos.x + temp.x), (int)(mainPos.y + temp.y)));
+                    }
+        }
+
+        {
+            clickPos = GameManager.ConvertCeilVec(clickPos);
+            Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
+            Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
+            Vector2 offsetTemp = newCenterPos - clickPos;
+            Vector2 mainPos = GameManager.ConvertCeilVec(transform.position) - offsetTemp;
+
+
+            for (int c = 0; c < block_size; c++)
+                for (int r = 0; r < block_size; r++)
+                    if (MAP[c, r])
+                    {
+                        Vector2 temp = new Vector2(block_size - 1 - r, -c);
+                        list.Add(new Vector2Int((int)(mainPos.x + temp.x), (int)(mainPos.y + temp.y)));
+                    }
+        }
+         
+        foreach(Vector2Int vec in list)
+            if (Set.Contains(vec))
+                return false;
+
+        return true;
+    }
+
     private void OnMouseUpAsButton()
     {
         if (Vector2.Distance(clickPos, Camera.main.ScreenToWorldPoint(Input.mousePosition)) <= 0.01f)
         {
-            Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
-            bool[,] temp = new bool[Block_size, Block_size];
-            for (int c = 0; c < block_size; c++)
-                for (int r = 0; r < block_size; r++)
-                    temp[block_size - 1 - r, c] = MAP[c, r];
-            for (int c = 0; c < block_size; c++)
-                for (int r = 0; r < block_size; r++)
-                    MAP[c, r] = temp[c, r];
-            UpdateBlockState();
+            if(CanRotate(clickPos))
+            {
+                Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
+                bool[,] temp = new bool[Block_size, Block_size];
+                for (int c = 0; c < block_size; c++)
+                    for (int r = 0; r < block_size; r++)
+                        temp[block_size - 1 - r, c] = MAP[c, r];
+                for (int c = 0; c < block_size; c++)
+                    for (int r = 0; r < block_size; r++)
+                        MAP[c, r] = temp[c, r];
+                UpdateBlockState();
 
-            clickPos = GameManager.ConvertCeilVec(clickPos);
-            Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
-            Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
-            Vector3 offsetTemp = newCenterPos - clickPos;
-            transform.position -= offsetTemp;
-
+                clickPos = GameManager.ConvertCeilVec(clickPos);
+                Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
+                Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
+                Vector3 offsetTemp = newCenterPos - clickPos;
+                transform.position -= offsetTemp;
+            }        
         }
         clickPos = Vector2.zero;
 

@@ -22,6 +22,8 @@ internal static class DragDelegate
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
+
     public static Tile[,] Tile;
     public static Vector2 bv = new Vector2(-10, -10);
     public static Vector2Int map_size;
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     public delegate bool tileDelegate();
     internal tileDelegate victoryDele;
+    public List<Block> blockData = new List<Block>();
 
     [SerializeField]
     List<Tile> landingCheckTiles = new List<Tile>();
@@ -108,7 +111,7 @@ public class GameManager : MonoBehaviour
                     if (isRelease)
                     {
                         if (tileState[c, r])
-                            if (Tile[c, r].GetIsFill()) // if(Tile[c, r].GetIsFill())
+                            if (Tile[c, r].GetIsFill()) 
                                 Block.nowBlock.ReturnToBasePos();
                             else if(CheckCanTileLand(Tile[c, r]))
                                 Tile[c, r].SetIsFill(isRelease);
