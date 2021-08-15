@@ -5,6 +5,12 @@ using Sirenix.OdinInspector;
 
 public class Block : SerializedMonoBehaviour
 {
+    public const int baseSortNum = 0;
+    public const int nowBlockSortNum = -5;
+
+    // 다른 블록, 설치 불가능한 지역에 놓여질 때 되돌아갈 위치.
+    public Vector2 basePos;
+
     public static Block nowBlock;
     private int Block_size = 1;
     [Title("ũ��")]
@@ -40,7 +46,8 @@ public class Block : SerializedMonoBehaviour
             {
                 GameObject obj = Instantiate(temp);
                 obj.transform.SetParent(transform);
-                obj.transform.localPosition = new Vector3(c * OBJ_X, -r * OBJ_Y, temp.transform.position.z);
+                basePos = new Vector3(c * OBJ_X, -r * OBJ_Y, temp.transform.position.z);
+                obj.transform.localPosition = basePos;
                 blocks[c, r] = obj;
             }
 
@@ -67,11 +74,16 @@ public class Block : SerializedMonoBehaviour
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
         nowBlock = this;
 
-        DragDelegate.CallInvoke();
+        nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
+
+        DragDelegate.CallInvoke(false);
     }
 
     private void OnMouseUp()
     {
+        nowBlock.GetComponent<SpriteRenderer>().sortingOrder = baseSortNum;
+        DragDelegate.CallInvoke(true);
+
         offset = Vector2.zero;
         nowBlock = null;
 
@@ -89,7 +101,14 @@ public class Block : SerializedMonoBehaviour
             v.y += 0.5f;
 
         transform.position = v;
+
+        
+        GameManager.instance.victoryDele();
+        Debug.Log("즐거운 체크 시간");
     }
 
-
+    public void ReturnToBasePos()
+    {
+        transform.position = basePos;
+    }
 }

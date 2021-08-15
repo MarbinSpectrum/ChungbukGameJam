@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
+    bool isFill;
     private SpriteRenderer SpriteRenderer;
 
     private SpriteRenderer spriteRenderer
@@ -24,5 +25,20 @@ public class Tile : MonoBehaviour
     public void Highight()
     {
         spriteRenderer.color = Color.gray;
+    }
+
+    public Color GetSpriteRendererColor()
+    {
+        return SpriteRenderer.color;
+    }
+
+    public bool GetIsFill()
+    {
+        return isFill;
+    }
+
+    public void SetIsFill(bool b)
+    {
+        isFill = b;
     }
 }
