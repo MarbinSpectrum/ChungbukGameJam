@@ -89,6 +89,15 @@ public class Block : SerializedMonoBehaviour
             sprite.sortingOrder = nowBlockSortNum;
 
         DragDelegate.CallInvoke(false);
+
+        if (SortBlock.instance.sortRankBlock.Contains(this))
+        {
+            SortBlock.instance.sortRankBlock.Remove(this);
+        }
+
+        nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
+        SortBlock.instance.SortOrderDuringDrag(this);
+
     }
 
     private void OnMouseUp()
@@ -106,6 +115,15 @@ public class Block : SerializedMonoBehaviour
         transform.position = GameManager.ConvertCeilVec(transform.position);
         
         GameManager.instance.victoryDele();
+
+        if (!SortBlock.instance.sortRankBlock.Contains(this))
+        {
+            SortBlock.instance.sortRankBlock.Add(this);
+            print("되는건가?");
+
+        }
+        SortBlock.instance.SortBlocks();
+
     }
 
     private Vector2 clickPos;
