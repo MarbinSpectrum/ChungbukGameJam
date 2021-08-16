@@ -110,20 +110,16 @@ public class Block : SerializedMonoBehaviour
         offset = Vector2.zero;
         clickPos = Vector2.zero;
 
+        transform.position = GameManager.ConvertCeilVec(transform.position);
+
         DragDelegate.CallInvoke(true);
 
         nowBlock = null;
-
-        transform.position = GameManager.ConvertCeilVec(transform.position);
         
         GameManager.instance.victoryDele();
 
         if (!SortBlock.instance.sortRankBlock.Contains(this))
-        {
             SortBlock.instance.sortRankBlock.Add(this);
-            print("되는건가?");
-
-        }
         SortBlock.instance.SortBlocks();
 
     }
@@ -139,6 +135,15 @@ public class Block : SerializedMonoBehaviour
         return ret;
     }
 
+    public int GetBlockCount()
+    {
+        int res = 0;
+        for (int c = 0; c < block_size; c++)
+            for (int r = 0; r < block_size; r++)
+                if (MAP[c, r])
+                    res++;
+        return res;
+    }
     public List<Vector2> GetBlocksArray()
     {
         List<Vector2> list = new List<Vector2>();
@@ -178,9 +183,9 @@ public class Block : SerializedMonoBehaviour
 
         foreach (Vector2 vec in list)
             if (Set.Contains(vec))
-                return false;
+                return true;
 
-        return true;
+        return false;
     }
     private bool CanRotate(Vector2 clickPos)
     {
@@ -203,8 +208,8 @@ public class Block : SerializedMonoBehaviour
                         list.Add(newVec);
                     }
         }
-         
-        return OverLapBlock(list);
+        int inTheBlockCount = GameManager.InTheBlockCount(this, list);
+        return !((0 < inTheBlockCount && inTheBlockCount < GetBlockCount()) || OverLapBlock(list));
     }
 
     private void OnMouseUpAsButton()
@@ -228,12 +233,10 @@ public class Block : SerializedMonoBehaviour
                 Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
                 Vector3 offsetTemp = newCenterPos - clickPos;
                 transform.position -= offsetTemp;
+                GameManager.bv = GameManager.ConvertTileVec(transform.position);
             }        
         }
-        clickPos = Vector2.zero;
 
-        GameManager.bv = GameManager.ConvertTileVec(transform.position);
-        DragDelegate.CallInvoke(true);
     }
 
     public void ReturnToBasePos()

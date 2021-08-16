@@ -47,7 +47,6 @@ public class SortBlock : MonoBehaviour
                 c.sortingOrder = (sortRankBlock.IndexOf(sortRankBlock[i]) + 1);
             }
 
-            print(sortRankBlock[i]);
         }
     }
 

@@ -38,6 +38,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null)
+            return;
+
         instance = this;
         createMap = FindObjectOfType<CreateMap>();
 
@@ -80,25 +83,45 @@ public class GameManager : MonoBehaviour
         return v;
     }
 
-    private bool IsInTheMapCheck(Block block)
+    //선택된 블록이 내부에 몇개나 있는지 검사
+    public static int InTheBlockCount(Block block,List<Vector2> list = null)
     {
+        int res = 0;
+
         HashSet<Vector2> Set = new HashSet<Vector2>();
+
+        for (int c = 0; c < instance.createMap.map_size.x; c++)
+            for (int r = 0; r < instance.createMap.map_size.y; r++)
+                if (instance.createMap.MAP[c, r])
+                    Set.Add(instance.createMap.transform.position + Tile[c, r].transform.localPosition);
+
+        if(list == null)
+            list = block.GetBlocksArray();
+
+        foreach (Vector2 vec in list)
+            if (Set.Contains(vec))
+                res++;
+
+        return res;
+    }
+
+    private void CheckTile()
+    {     
+        HashSet<Vector2> Set = new HashSet<Vector2>();
+        foreach (Block b in blockData)
+            for (int c = 0; c < b.block_size; c++)
+                for (int r = 0; r < b.block_size; r++)
+                    if (b.MAP[c, r])
+                    {
+                        Vector2 mainPos = b.transform.position;
+                        Vector2 temp = new Vector2(c, -r);
+                        Set.Add(new Vector2(mainPos.x + temp.x, mainPos.y + temp.y));
+                    }
 
         for (int c = 0; c < createMap.map_size.x; c++)
             for (int r = 0; r < createMap.map_size.y; r++)
                 if (createMap.MAP[c, r])
-                    Set.Add(createMap.transform.position + Tile[c, r].transform.localPosition);
-
-        List<Vector2> list = block.GetBlocksArray();
-
-        foreach (Vector2 vec in list)
-            if (!Set.Contains(vec))
-            {
-                Debug.Log(vec);
-                return false;
-            }
-
-        return true;
+                    Tile[c, r].SetIsFill(Set.Contains(createMap.transform.position + Tile[c, r].transform.localPosition));
     }
 
 
@@ -107,73 +130,60 @@ public class GameManager : MonoBehaviour
     public void SettingCheck(bool isRelease)
     {
         bool[,] tileState = new bool[map_size.x, map_size.y];
-
         if (Block.nowBlock)
         {
-            for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
-                for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
-                {
-                    // 타일맵 좌표
-                    int ac = c - (int)bv.x;
-                    int ar = r - (int)bv.y;
-                    if (Block.nowBlock.MAP[ac, ar])
-                        tileState[c, r] = true;
+            if(!isRelease)
+            {
+                for (int r = 0; r < map_size.y; r++)
+                    for (int c = 0; c < map_size.x; c++)
+                        Tile[c, r].SetIsFill(false);
 
-                    if (isRelease)
+                for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
+                    for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
                     {
-                        if (!IsInTheMapCheck(Block.nowBlock) || Block.nowBlock.OverLapBlock())
-                        {
-                            Block.nowBlock.ReturnToBasePos();
-                            System.Array.Clear(tileState, 0, tileState.Length);
-                            break;
-                        }
-
-                        //if (bv.x < 0 || bv.y < 0 || bv.x + Block.nowBlock.block_size > createMap.map_size.x || bv.y + Block.nowBlock.block_size > createMap.map_size.y)
-                        //{
-                        //    Block.nowBlock.ReturnToBasePos();
-                        //    System.Array.Clear(tileState, 0, tileState.Length);
-                        //    break;
-                        //}
-                        //else
-                        //{
-                        //    if (tileState[c, r])
-                        //    {
-                        //        if (landingCheckTiles.Contains(Tile[c, r]) && Tile[c, r].GetIsFill() == true) // 이미 리스트 안에 tile[c,r]이 있고, tile[c,r]이 이미 채워져 있을 경우 
-                        //        {
-                        //            Block.nowBlock.ReturnToBasePos();
-                        //            System.Array.Clear(tileState, 0, tileState.Length);
-                        //            break;
-                        //        }
-                        //        else
-                        //        {
-                        //            Tile[c, r].SetIsFill(true);
-
-                        //            if (!landingCheckTiles.Contains(Tile[c, r]))
-                        //                landingCheckTiles.Add(Tile[c, r]);
-                        //        }
-                        //    }
-                        //}
+                        // 타일맵 좌표
+                        int ac = c - (int)bv.x;
+                        int ar = r - (int)bv.y;
+                        if (Block.nowBlock.MAP[ac, ar])
+                            tileState[c, r] = true;
+                        else
+                            tileState[c, r] = false;
                     }
-                }
 
+                for (int r = 0; r < map_size.y; r++)
+                    for (int c = 0; c < map_size.x; c++)
+                        ChangeTileColorInMap(tileState, c, r);
 
-
-
-            for (int r = 0; r < map_size.y; r++)
-                for (int c = 0; c < map_size.x; c++)
+            }
+            else 
+            {
+                int inTheBlockCount = InTheBlockCount(Block.nowBlock);
+                if ((0 < inTheBlockCount && inTheBlockCount < Block.nowBlock.GetBlockCount()) || Block.nowBlock.OverLapBlock())
                 {
-                    ChangeTileColorInMap(tileState, c, r);
+                    Block.nowBlock.ReturnToBasePos();
+                    Array.Clear(tileState, 0, tileState.Length);
+                    ChangeTileColorInMaps(tileState);
 
-                    if (landingCheckTiles.Contains(Tile[c, r]))
-                        tileState[c, r] = true;
                 }
+                else
+                    CheckTile();
+            }
         }
     }
 
 
+    void ChangeTileColorInMaps(bool[,] tileConditions)
+    {
+        for (int w = 0; w < Tile.GetLength(0); w++)
+            for (int h = 0; h < Tile.GetLength(1); h++)
+                if (tileConditions[w, h])
+                    Tile[w, h].Highight();
+                else
+                    Tile[w, h].Normal();
+    }
     void ChangeTileColorInMap(bool[,] tileConditions, int x, int y)
     {
-        if (tileConditions[x, y] || Tile[x, y].GetIsFill())
+        if (tileConditions[x, y])
             Tile[x, y].Highight();
         else
             Tile[x, y].Normal();
@@ -192,13 +202,10 @@ public class GameManager : MonoBehaviour
     internal bool CheckVictory()
     {
         for (int w = 0; w < Tile.GetLength(0); w++)
-        {
             for (int h = 0; h < Tile.GetLength(1); h++)
-            {
-                if (Tile[w, h].GetIsFill() == false)
-                    return false;
-            }
-        }
+                if (createMap.MAP[w, h])
+                    if (Tile[w, h].GetIsFill() == false)
+                        return false;
 
         VictoryComment();
         return true;
