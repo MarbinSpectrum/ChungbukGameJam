@@ -39,6 +39,8 @@ public class Block : SerializedMonoBehaviour
     GameObject[,] blocks;
     public void Start()
     {
+        basePos = transform.position;
+
         GameManager.instance.blockData.Add(this);
 
         GameObject temp = transform.GetChild(0).gameObject;

@@ -91,42 +91,71 @@ public class GameManager : MonoBehaviour
             for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
                 for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
                 {
-
                     // 타일맵 좌표
                     int ac = c - (int)bv.x;
                     int ar = r - (int)bv.y;
-                    if (ac < 0 || ar < 0 || ac >= Block.nowBlock.block_size || ar >= Block.nowBlock.block_size)
-                    {
-                        Block.nowBlock.ReturnToBasePos();
-                        continue;
-                    }
-
-                    // c, r: 월드 좌표에 해당되는 타일의 위치          
-                    if(!Block.nowBlock.MAP[ac,ar]) 
-                        continue;
 
                     if (Block.nowBlock.MAP[ac, ar])
+                    {
                         tileState[c, r] = true;
+                    }
 
                     if (isRelease)
                     {
-                        if (tileState[c, r])
-                            if (Tile[c, r].GetIsFill()) 
-                                Block.nowBlock.ReturnToBasePos();
-                            else if(CheckCanTileLand(Tile[c, r]))
-                                Tile[c, r].SetIsFill(isRelease);
+                        // 맵의 한 변보다 블럭의 길이가 더 클 경우 차단. 
+                        if (Block.nowBlock.block_size > createMap.map_size.x || Block.nowBlock.block_size > createMap.map_size.y)
+                        {
+                            Block.nowBlock.ReturnToBasePos();
+                            tileState[c, r] = false;
+                            break;
+                        }
 
-                        if (!landingCheckTiles.Contains(Tile[c, r]))
-                            landingCheckTiles.Add(Tile[c, r]);
+                        if (bv.x < 0 || bv.y < 0
+                            || bv.x + Block.nowBlock.block_size > createMap.map_size.x || bv.y + Block.nowBlock.block_size > createMap.map_size.y)
+                        {
+                            print("설치할 수 없습니다.");
+
+                            print(Block.nowBlock.transform.position);
+
+                            Block.nowBlock.ReturnToBasePos();
+                            return;
+                        }
+                        else
+                        {
+                            if (tileState[c, r])
+                            {
+                                if (landingCheckTiles.Contains(Tile[c, r]) && Tile[c, r].GetIsFill() == true) // 이미 리스트 안에 tile[c,r]이 있고, tile[c,r]이 이미 채워져 있을 경우 
+                                {
+                                    Block.nowBlock.ReturnToBasePos();
+                                    break;
+                                }
+                                else
+                                {
+                                    print("!!!");
+                                    print(bv.x + ", " + bv.y);
+                                    print(Block.nowBlock.transform.position);
+
+                                    Tile[c, r].SetIsFill(true);
+
+                                    if (!landingCheckTiles.Contains(Tile[c, r]))
+                                        landingCheckTiles.Add(Tile[c, r]);
+                                }
+                            }
+                        }
                     }
                 }
 
             for (int r = 0; r < map_size.y; r++)
                 for (int c = 0; c < map_size.x; c++)
+                {
                     ChangeTileColorInMap(tileState, c, r);
 
+                    if (landingCheckTiles.Contains(Tile[c, r]))
+                        tileState[c, r] = true;
+                }
         }
     }
+
 
     void ChangeTileColorInMap(bool[,] tileConditions, int x, int y)
     {
@@ -165,34 +194,4 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("승리!");
     }
-
-
-    // public void Update()
-    // {
-    //     bool[,] tileState = new bool[map_size.x, map_size.y];
-    //     if (Block.nowBlock)
-    //     {
-    //         for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
-    //             for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
-    //             {
-    //                 int ac = c - (int)bv.x;
-    //                 int ar = r - (int)bv.y;
-    //                 if (ac < 0 || ar < 0 || ac >= Block.nowBlock.block_size || ar >= Block.nowBlock.block_size)
-    //                     continue;
-    //                 if (Block.nowBlock.MAP[ac, ar])
-    //                     tileState[c, r] = true;
-
-    //             }
-    //     }
-
-
-    //     for (int r = 0; r < map_size.y; r++)
-    //         for (int c = 0; c < map_size.x; c++)
-    //         {
-    //             if (tileState[c, r])
-    //                 Tile[c, r].Highight();
-    //             else
-    //                 Tile[c, r].Normal();
-    //         }
-    // }
 }
