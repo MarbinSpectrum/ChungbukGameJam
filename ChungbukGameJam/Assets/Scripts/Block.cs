@@ -37,7 +37,10 @@ public class Block : SerializedMonoBehaviour
     private const float OBJ_Y = 1;
 
     GameObject[,] blocks;
-    public void Start()
+
+    List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+
+    private void Start()
     {
         basePos = transform.position;
 
@@ -52,14 +55,16 @@ public class Block : SerializedMonoBehaviour
                 obj.transform.SetParent(transform);
                 obj.transform.localPosition = new Vector3(c * OBJ_X, -r * OBJ_Y, temp.transform.position.z);
                 blocks[c, r] = obj;
+                spriteRenderers.Add(obj.GetComponent<SpriteRenderer>());
             }
 
         UpdateBlockState();
         temp.SetActive(false);
         transform.position = GameManager.ConvertCeilVec(transform.position);
+
     }
 
-    public void UpdateBlockState()
+    private void UpdateBlockState()
     {
         for (int r = 0; r < Block_size; r++)
             for (int c = 0; c < Block_size; c++)
@@ -80,27 +85,27 @@ public class Block : SerializedMonoBehaviour
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
         nowBlock = this;
 
-        nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
+        foreach (SpriteRenderer sprite in spriteRenderers)
+            sprite.sortingOrder = nowBlockSortNum;
 
         DragDelegate.CallInvoke(false);
     }
 
     private void OnMouseUp()
     {
-        if(nowBlock)
-            nowBlock.GetComponent<SpriteRenderer>().sortingOrder = baseSortNum;
-        DragDelegate.CallInvoke(true);
+        foreach (SpriteRenderer sprite in spriteRenderers)
+            sprite.sortingOrder = baseSortNum;
 
         offset = Vector2.zero;
         clickPos = Vector2.zero;
 
+        DragDelegate.CallInvoke(true);
+
         nowBlock = null;
 
         transform.position = GameManager.ConvertCeilVec(transform.position);
-
         
         GameManager.instance.victoryDele();
-        Debug.Log("즐거운 체크 시간");
     }
 
     private Vector2 clickPos;
@@ -114,13 +119,30 @@ public class Block : SerializedMonoBehaviour
         return ret;
     }
 
-
-    private bool CanRotate(Vector2 clickPos)
+    public List<Vector2> GetBlocksArray()
     {
-        HashSet<Vector2Int> Set = new HashSet<Vector2Int>();
-        List<Vector2Int> list = new List<Vector2Int>();
+        List<Vector2> list = new List<Vector2>();
+        Vector2 mainPos = GameManager.ConvertCeilVec(transform.position);
+        for (int c = 0; c < block_size; c++)
+            for (int r = 0; r < block_size; r++)
+                if (MAP[c, r])
+                {
+                    Vector2 temp = blocks[c, r].transform.localPosition;
+                    Vector2 newVec = new Vector2(mainPos.x + temp.x, mainPos.y + temp.y);
+                    list.Add(newVec);
+                }
+
+        return list;
+    }
+    public bool OverLapBlock()
+    {
+        return OverLapBlock(GetBlocksArray());
+    }
+    public bool OverLapBlock(List<Vector2> list)
+    {
+        HashSet<Vector2> Set = new HashSet<Vector2>();
         var blockList = GameManager.instance.blockData;
-        foreach(Block b in blockList)
+        foreach (Block b in blockList)
         {
             if (b == this)
                 continue;
@@ -128,34 +150,41 @@ public class Block : SerializedMonoBehaviour
                 for (int r = 0; r < b.block_size; r++)
                     if (b.MAP[c, r])
                     {
-                        Vector2 mainPos = GameManager.ConvertCeilVec(b.transform.position);
+                        Vector2 mainPos = b.transform.position;
                         Vector2 temp = new Vector2(c, -r);
-                        Set.Add(new Vector2Int((int)(mainPos.x + temp.x), (int)(mainPos.y + temp.y)));
+                        Set.Add(new Vector2(mainPos.x + temp.x, mainPos.y + temp.y));
                     }
         }
+
+        foreach (Vector2 vec in list)
+            if (Set.Contains(vec))
+                return false;
+
+        return true;
+    }
+    private bool CanRotate(Vector2 clickPos)
+    {
+        List<Vector2> list = new List<Vector2>();
 
         {
             clickPos = GameManager.ConvertCeilVec(clickPos);
             Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
             Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
             Vector2 offsetTemp = newCenterPos - clickPos;
-            Vector2 mainPos = GameManager.ConvertCeilVec(transform.position) - offsetTemp;
-
+            Vector2 mainPos = (Vector2)transform.position - offsetTemp;
+            mainPos = new Vector2(mainPos.x, mainPos.y);
 
             for (int c = 0; c < block_size; c++)
                 for (int r = 0; r < block_size; r++)
                     if (MAP[c, r])
                     {
-                        Vector2 temp = new Vector2(block_size - 1 - r, -c);
-                        list.Add(new Vector2Int((int)(mainPos.x + temp.x), (int)(mainPos.y + temp.y)));
+                        Vector2 temp = blocks[block_size - 1 - r, c].transform.localPosition;
+                        Vector2 newVec = new Vector2(mainPos.x + temp.x, mainPos.y + temp.y);
+                        list.Add(newVec);
                     }
         }
          
-        foreach(Vector2Int vec in list)
-            if (Set.Contains(vec))
-                return false;
-
-        return true;
+        return OverLapBlock(list);
     }
 
     private void OnMouseUpAsButton()
@@ -184,7 +213,7 @@ public class Block : SerializedMonoBehaviour
         clickPos = Vector2.zero;
 
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
-        DragDelegate.CallInvoke(false);
+        DragDelegate.CallInvoke(true);
     }
 
     public void ReturnToBasePos()

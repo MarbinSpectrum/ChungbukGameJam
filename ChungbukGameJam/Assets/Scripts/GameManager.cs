@@ -80,6 +80,28 @@ public class GameManager : MonoBehaviour
         return v;
     }
 
+    private bool IsInTheMapCheck(Block block)
+    {
+        HashSet<Vector2> Set = new HashSet<Vector2>();
+
+        for (int c = 0; c < createMap.map_size.x; c++)
+            for (int r = 0; r < createMap.map_size.y; r++)
+                if (createMap.MAP[c, r])
+                    Set.Add(createMap.transform.position + Tile[c, r].transform.localPosition);
+
+        List<Vector2> list = block.GetBlocksArray();
+
+        foreach (Vector2 vec in list)
+            if (!Set.Contains(vec))
+            {
+                Debug.Log(vec);
+                return false;
+            }
+
+        return true;
+    }
+
+
     // 타일 내 색깔 변경은 optional featrue로 판정.
     // 기획팀과 상의한 뒤, 이 기능이 필요한 지 물어보도록 하자.
     public void SettingCheck(bool isRelease)
@@ -94,56 +116,48 @@ public class GameManager : MonoBehaviour
                     // 타일맵 좌표
                     int ac = c - (int)bv.x;
                     int ar = r - (int)bv.y;
-
                     if (Block.nowBlock.MAP[ac, ar])
-                    {
                         tileState[c, r] = true;
-                    }
 
                     if (isRelease)
                     {
-                        // 맵의 한 변보다 블럭의 길이가 더 클 경우 차단. 
-                        if (Block.nowBlock.block_size > createMap.map_size.x || Block.nowBlock.block_size > createMap.map_size.y)
+                        if (!IsInTheMapCheck(Block.nowBlock) || Block.nowBlock.OverLapBlock())
                         {
                             Block.nowBlock.ReturnToBasePos();
-                            tileState[c, r] = false;
+                            System.Array.Clear(tileState, 0, tileState.Length);
                             break;
                         }
 
-                        if (bv.x < 0 || bv.y < 0
-                            || bv.x + Block.nowBlock.block_size > createMap.map_size.x || bv.y + Block.nowBlock.block_size > createMap.map_size.y)
-                        {
-                            print("설치할 수 없습니다.");
+                        //if (bv.x < 0 || bv.y < 0 || bv.x + Block.nowBlock.block_size > createMap.map_size.x || bv.y + Block.nowBlock.block_size > createMap.map_size.y)
+                        //{
+                        //    Block.nowBlock.ReturnToBasePos();
+                        //    System.Array.Clear(tileState, 0, tileState.Length);
+                        //    break;
+                        //}
+                        //else
+                        //{
+                        //    if (tileState[c, r])
+                        //    {
+                        //        if (landingCheckTiles.Contains(Tile[c, r]) && Tile[c, r].GetIsFill() == true) // 이미 리스트 안에 tile[c,r]이 있고, tile[c,r]이 이미 채워져 있을 경우 
+                        //        {
+                        //            Block.nowBlock.ReturnToBasePos();
+                        //            System.Array.Clear(tileState, 0, tileState.Length);
+                        //            break;
+                        //        }
+                        //        else
+                        //        {
+                        //            Tile[c, r].SetIsFill(true);
 
-                            print(Block.nowBlock.transform.position);
-
-                            Block.nowBlock.ReturnToBasePos();
-                            return;
-                        }
-                        else
-                        {
-                            if (tileState[c, r])
-                            {
-                                if (landingCheckTiles.Contains(Tile[c, r]) && Tile[c, r].GetIsFill() == true) // 이미 리스트 안에 tile[c,r]이 있고, tile[c,r]이 이미 채워져 있을 경우 
-                                {
-                                    Block.nowBlock.ReturnToBasePos();
-                                    break;
-                                }
-                                else
-                                {
-                                    print("!!!");
-                                    print(bv.x + ", " + bv.y);
-                                    print(Block.nowBlock.transform.position);
-
-                                    Tile[c, r].SetIsFill(true);
-
-                                    if (!landingCheckTiles.Contains(Tile[c, r]))
-                                        landingCheckTiles.Add(Tile[c, r]);
-                                }
-                            }
-                        }
+                        //            if (!landingCheckTiles.Contains(Tile[c, r]))
+                        //                landingCheckTiles.Add(Tile[c, r]);
+                        //        }
+                        //    }
+                        //}
                     }
                 }
+
+
+
 
             for (int r = 0; r < map_size.y; r++)
                 for (int c = 0; c < map_size.x; c++)
