@@ -13,7 +13,7 @@ public class Block : SerializedMonoBehaviour
 
     public static Block nowBlock;
     private int Block_size = 1;
-    [Title("ũ��")]
+    [Title("크기")]
     [GUIColor(0, 1, 0)]
     [HideLabel]
     [SerializeField]
@@ -28,7 +28,7 @@ public class Block : SerializedMonoBehaviour
         }
     }
 
-    [Title("���")]
+    [Title("모양")]
     public bool[,] MAP;
 
     /////////////////////////////////////////////////////////////////
@@ -42,7 +42,6 @@ public class Block : SerializedMonoBehaviour
 
     private void Start()
     {
-        basePos = transform.position;
 
         GameManager.instance.blockData.Add(this);
         SortBlock.instance.sortRankBlock.Add(this);
@@ -63,6 +62,7 @@ public class Block : SerializedMonoBehaviour
         UpdateBlockState();
         temp.SetActive(false);
         transform.position = GameManager.ConvertCeilVec(transform.position);
+        basePos = transform.position;
 
     }
 
