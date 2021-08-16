@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 public class Block : SerializedMonoBehaviour
 {
     public const int baseSortNum = 0;
-    public const int nowBlockSortNum = -5;
+    public const int nowBlockSortNum = 99;
 
     // 다른 블록, 설치 불가능한 지역에 놓여질 때 되돌아갈 위치.
     private Vector2 basePos;
@@ -45,6 +45,8 @@ public class Block : SerializedMonoBehaviour
         basePos = transform.position;
 
         GameManager.instance.blockData.Add(this);
+        SortBlock.instance.sortRankBlock.Add(this);
+        SortBlock.instance.SortBlocks();
 
         GameObject temp = transform.GetChild(0).gameObject;
         blocks = new GameObject[block_size, block_size];
