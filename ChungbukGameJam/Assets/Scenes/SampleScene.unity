@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockData: []
-  landingCheckTiles: []
 --- !u!4 &5670798
 Transform:
   m_ObjectHideFlags: 0
@@ -794,10 +793,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2Int, UnityEngine.CoreModule
     - Name: 
       Entry: 3
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 3
-      Data: 4
+      Data: 2
     - Name: 
       Entry: 8
       Data: 
@@ -806,10 +805,10 @@ MonoBehaviour:
       Data: 0|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
-      Data: 12
+      Data: 4
     - Name: ranks
       Entry: 1
-      Data: 3|4
+      Data: 2|2
     - Name: 
       Entry: 5
       Data: true
@@ -821,31 +820,7 @@ MonoBehaviour:
       Data: true
     - Name: 
       Entry: 5
-      Data: false
-    - Name: 
-      Entry: 5
       Data: true
-    - Name: 
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 5
-      Data: false
     - Name: 
       Entry: 13
       Data: 

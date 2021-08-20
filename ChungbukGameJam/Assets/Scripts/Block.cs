@@ -236,7 +236,6 @@ public class Block : SerializedMonoBehaviour
                 GameManager.bv = GameManager.ConvertTileVec(transform.position);
             }        
         }
-
     }
 
     public void ReturnToBasePos()

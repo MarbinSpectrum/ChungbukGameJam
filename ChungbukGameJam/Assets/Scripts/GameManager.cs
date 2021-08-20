@@ -23,7 +23,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-
     public static Tile[,] Tile;
     public static Vector2 bv = new Vector2(-10, -10);
     public static Vector2Int map_size;
@@ -32,9 +31,6 @@ public class GameManager : MonoBehaviour
     public delegate bool tileDelegate();
     internal tileDelegate victoryDele;
     public List<Block> blockData = new List<Block>();
-
-    [SerializeField]
-    List<Tile> landingCheckTiles = new List<Tile>();
 
     private void Awake()
     {
@@ -187,16 +183,6 @@ public class GameManager : MonoBehaviour
             Tile[x, y].Highight();
         else
             Tile[x, y].Normal();
-    }
-
-    bool CheckCanTileLand(Tile t)
-    {
-        for (int i = 0; i < landingCheckTiles.Count; i++)
-        {
-            if (landingCheckTiles.Contains(t))
-                return false;
-        }
-        return true;
     }
 
     internal bool CheckVictory()
