@@ -93,13 +93,10 @@ public class Block : SerializedMonoBehaviour
         DragDelegate.CallInvoke(false);
 
         if (SortBlock.instance.sortRankBlock.Contains(this))
-        {
             SortBlock.instance.sortRankBlock.Remove(this);
-        }
-
+        
         nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
         SortBlock.instance.SortOrderDuringDrag(this);
-
     }
 
     private void OnMouseUp()
@@ -144,6 +141,7 @@ public class Block : SerializedMonoBehaviour
                     res++;
         return res;
     }
+
     public List<Vector2> GetBlocksArray()
     {
         List<Vector2> list = new List<Vector2>();
@@ -222,7 +220,11 @@ public class Block : SerializedMonoBehaviour
                 bool[,] temp = new bool[Block_size, Block_size];
                 for (int c = 0; c < block_size; c++)
                     for (int r = 0; r < block_size; r++)
+                    {
                         temp[block_size - 1 - r, c] = MAP[c, r];
+                        // MAP[c, r] = temp[c, r];
+                    }
+
                 for (int c = 0; c < block_size; c++)
                     for (int r = 0; r < block_size; r++)
                         MAP[c, r] = temp[c, r];
