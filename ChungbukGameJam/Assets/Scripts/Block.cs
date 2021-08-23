@@ -13,6 +13,7 @@ public class Block : SerializedMonoBehaviour
 
     public static Block nowBlock;
     private int Block_size = 1;
+
     [Title("크기")]
     [GUIColor(0, 1, 0)]
     [HideLabel]
@@ -245,3 +246,4 @@ public class Block : SerializedMonoBehaviour
         transform.position = basePos;
     }
 }
+

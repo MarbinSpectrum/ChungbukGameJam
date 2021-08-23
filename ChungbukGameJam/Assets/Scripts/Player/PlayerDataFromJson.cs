@@ -32,26 +32,26 @@ public class PlayerDataFromJson : MonoBehaviour
 
         json = JsonUtility.FromJson<PlayerJson>(obj.ToString());
 
-        if (json != null)
-        {
-            print(JsonUtility.ToJson(json,true));
-            print(json.HaveCats.Count);
-        }
+        // if (json != null)
+        // {
+        //     print(JsonUtility.ToJson(json,true));
+        //     print(json.HaveCats.Count);
+        // }
+
     }
 
     public void SetData()
     {
-        Cat c = new Cat(200003, "에바냥이");
-        json.HaveCats.Add(c);
-        // JsonUtility.ToJson<PlayerJson>(json);
-        string pJson = JsonUtility.ToJson(json,true);
+        // CatData c = new CatData(200003, "에바냥이", null);
+        // json.HaveCats.Add(c);
+        // string pJson = JsonUtility.ToJson(json,true);
 
-        print(pJson);
+        // print(pJson);
         
         // string path = Resources.Load("PlayerInfo").ToString() + "PlayerData.json";
-        print(Application.dataPath);
-        string path = Path.Combine(Application.dataPath, "Resources/PlayerInfo/PlayerData.json");
-        File.WriteAllText(path, pJson);
+        // print(Application.dataPath);
+        // string path = Path.Combine(Application.dataPath, "Resources/PlayerInfo/PlayerData.json");
+        // File.WriteAllText(path, pJson);
     }
 
     public void SaveDataToJson()
@@ -69,7 +69,7 @@ public class PlayerJson
     public int HaveGold;
 
     [SerializeField]
-    public List<Cat> HaveCats;
+    public List<CatData> HaveCats;
     public List<Board> HaveBoards;
     public List<Food> HaveFoods;
     public List<BGM> HaveBGMs;
