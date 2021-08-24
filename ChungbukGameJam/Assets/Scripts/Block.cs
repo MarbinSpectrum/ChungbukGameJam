@@ -86,6 +86,7 @@ public class Block : SerializedMonoBehaviour
         transform.position = v + offset;
 
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
+        print(GameManager.bv);
         nowBlock = this;
 
         foreach (SpriteRenderer sprite in spriteRenderers)

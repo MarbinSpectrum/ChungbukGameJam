@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class VictoryCaller : MonoBehaviour
 {
+    public Canvas winCanvas;
+    public delegate void VictoryDele();
+    public event VictoryDele CallVictory;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        winCanvas.gameObject.SetActive(false);
+        CallVictory += ActivateWinCanvas;
     }
 
-    // Update is called once per frame
-    void Update()
+    void ActivateWinCanvas()
     {
-        
+
+    }
+
+    public void InvokeCallVictory()
+    {
+        CallVictory?.Invoke();
     }
 }

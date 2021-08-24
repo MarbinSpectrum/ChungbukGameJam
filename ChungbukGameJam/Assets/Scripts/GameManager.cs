@@ -68,12 +68,12 @@ public class GameManager : MonoBehaviour
 
     public static Vector2 ConvertTileVec(Vector2 v)
     {
-        v.x += (CreateMap.OBJ_X * (map_size.x - 1)) * 0.5f;
+        v.x += (CreateMap.OBJ_X * (map_size.x - 1)) * 0.5f - (int)CreateMap.instance.transform.position.x;
         v.x += 0.5f;
         v.x = Mathf.FloorToInt(v.x);
 
         v.y = -v.y;
-        v.y += (CreateMap.OBJ_Y * (map_size.y - 1)) * 0.5f;
+        v.y += (CreateMap.OBJ_Y * (map_size.y - 1)) * 0.5f + (int)CreateMap.instance.transform.position.y;
         v.y += 0.5f;
         v.y = Mathf.FloorToInt(v.y);
         return v;
@@ -138,8 +138,9 @@ public class GameManager : MonoBehaviour
                     for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
                     {
                         // 타일맵 좌표
-                        int ac = c - (int)bv.x;
-                        int ar = r - (int)bv.y;
+                        int ac = c - (int)bv.x; // 0
+                        int ar = r - (int)bv.y; // 2
+
                         if (Block.nowBlock.MAP[ac, ar])
                             tileState[c, r] = true;
                         else
@@ -149,7 +150,6 @@ public class GameManager : MonoBehaviour
                 for (int r = 0; r < map_size.y; r++)
                     for (int c = 0; c < map_size.x; c++)
                         ChangeTileColorInMap(tileState, c, r);
-
             }
             else 
             {
@@ -159,7 +159,6 @@ public class GameManager : MonoBehaviour
                     Block.nowBlock.ReturnToBasePos();
                     Array.Clear(tileState, 0, tileState.Length);
                     ChangeTileColorInMaps(tileState);
-
                 }
                 else
                     CheckTile();

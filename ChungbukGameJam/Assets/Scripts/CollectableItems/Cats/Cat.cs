@@ -8,13 +8,21 @@ public class Cat : MonoBehaviour
     // Start is called before the first frame update
     public int CatID;
     public string CatName;
-    
+
+    public SpriteRenderer spriteRenderer;
+
     public List<Food> favoriteFoods = new List<Food>();
 
-    public Cat(int id, string name, List<Food> favorFood)
+    private void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public Cat(int id, string name, Sprite sprite, List<Food> favorFood)
     {
         CatID = id;
         CatName = name;
+        spriteRenderer.sprite = sprite;
         favoriteFoods = favorFood;
     }
 
