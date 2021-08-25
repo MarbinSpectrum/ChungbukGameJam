@@ -43,7 +43,6 @@ public class Block : SerializedMonoBehaviour
 
     private void Start()
     {
-
         GameManager.instance.blockData.Add(this);
         SortBlock.instance.sortRankBlock.Add(this);
         SortBlock.instance.SortBlocks();
@@ -67,12 +66,13 @@ public class Block : SerializedMonoBehaviour
 
     }
 
+
     private void UpdateBlockState()
     {
         for (int r = 0; r < Block_size; r++)
             for (int c = 0; c < Block_size; c++)
                 blocks[c, r].SetActive(MAP[c, r]);
-    }  
+    }
 
     private Vector2 offset;
 
@@ -84,9 +84,8 @@ public class Block : SerializedMonoBehaviour
         if (clickPos == Vector2.zero)
             clickPos = v;
         transform.position = v + offset;
-
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
-        print(GameManager.bv);
+
         nowBlock = this;
 
         foreach (SpriteRenderer sprite in spriteRenderers)
@@ -96,7 +95,7 @@ public class Block : SerializedMonoBehaviour
 
         if (SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Remove(this);
-        
+
         nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
         SortBlock.instance.SortOrderDuringDrag(this);
     }
@@ -114,13 +113,12 @@ public class Block : SerializedMonoBehaviour
         DragDelegate.CallInvoke(true);
 
         nowBlock = null;
-        
-        GameManager.instance.victoryDele();
+
+        GameManager.InvokeCheckVictoryDele();
 
         if (!SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Add(this);
         SortBlock.instance.SortBlocks();
-
     }
 
     private Vector2 clickPos;
@@ -216,7 +214,7 @@ public class Block : SerializedMonoBehaviour
     {
         if (Vector2.Distance(clickPos, Camera.main.ScreenToWorldPoint(Input.mousePosition)) <= 0.01f)
         {
-            if(CanRotate(clickPos))
+            if (CanRotate(clickPos))
             {
                 Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
                 bool[,] temp = new bool[Block_size, Block_size];
@@ -238,7 +236,7 @@ public class Block : SerializedMonoBehaviour
                 Vector3 offsetTemp = newCenterPos - clickPos;
                 transform.position -= offsetTemp;
                 GameManager.bv = GameManager.ConvertTileVec(transform.position);
-            }        
+            }
         }
     }
 

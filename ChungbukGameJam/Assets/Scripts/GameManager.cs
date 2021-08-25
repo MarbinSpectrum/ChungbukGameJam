@@ -6,31 +6,27 @@ using System;
 internal static class DragDelegate
 {
     public delegate void Dele(bool b);
-    static event Dele BlockCheck;
+    public static event Dele BlockCheck;
 
-    public static void CallInvoke(bool isRelease)
-    {
-        BlockCheck?.Invoke(isRelease);
-    }
-
-    public static void SubscribeBlockCheck(Dele dele)
-    {
-        BlockCheck += dele;
-    }
+    public static void CallInvoke(bool isRelease) => BlockCheck?.Invoke(isRelease);
+    
+    public static void SubscribeBlockCheck(Dele dele) => BlockCheck += dele;
+    
 }
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    private CreateMap createMap;
+    private StageManager stageManager;
 
     public static Tile[,] Tile;
     public static Vector2 bv = new Vector2(-10, -10);
     public static Vector2Int map_size;
-    private CreateMap createMap;
-
-    public delegate bool tileDelegate();
-    internal tileDelegate victoryDele;
     public List<Block> blockData = new List<Block>();
+    
+    public delegate void tileDelegate();
+    internal static event tileDelegate CheckVictoryDele;
 
     private void Awake()
     {
@@ -39,6 +35,10 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         createMap = FindObjectOfType<CreateMap>();
+        stageManager = FindObjectOfType<StageManager>();
+
+        stageManager.InstantiateBlocks();
+        stageManager.SetTileMapToCreateMap();
 
         Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
 
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         map_size = createMap.map_size;
 
         DragDelegate.SubscribeBlockCheck(SettingCheck);
-        victoryDele += CheckVictory;
+        CheckVictoryDele += CheckVictory;
     }
 
     public static Vector2 ConvertCeilVec(Vector2 v)
@@ -64,7 +64,6 @@ public class GameManager : MonoBehaviour
             v.y += 0.5f;
         return v;
     }
-
 
     public static Vector2 ConvertTileVec(Vector2 v)
     {
@@ -184,20 +183,23 @@ public class GameManager : MonoBehaviour
             Tile[x, y].Normal();
     }
 
-    internal bool CheckVictory()
+    internal void CheckVictory()
     {
         for (int w = 0; w < Tile.GetLength(0); w++)
             for (int h = 0; h < Tile.GetLength(1); h++)
                 if (createMap.MAP[w, h])
                     if (Tile[w, h].GetIsFill() == false)
-                        return false;
+                        return;
 
-        VictoryComment();
-        return true;
+        VictoryCaller.InvokeWinEvent(true);
     }
 
-    private void VictoryComment()
+    private void OnDisable() {
+        CheckVictoryDele = null;
+    }
+
+    public static void InvokeCheckVictoryDele()
     {
-        Debug.Log("승리!");
+        CheckVictoryDele?.Invoke();
     }
 }

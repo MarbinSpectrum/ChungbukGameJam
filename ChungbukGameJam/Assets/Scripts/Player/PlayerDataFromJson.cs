@@ -71,7 +71,7 @@ public class PlayerJson
     [SerializeField]
     public List<CatData> HaveCats;
     public List<Board> HaveBoards;
-    public List<Food> HaveFoods;
+    public List<FoodData> HaveFoods;
     public List<BGM> HaveBGMs;
     public List<Background> HaveBackgrounds;
 }

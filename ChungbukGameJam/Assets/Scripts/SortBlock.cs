@@ -12,22 +12,16 @@ public class SortBlock : MonoBehaviour
 
     private void Awake()
     {
+        sortRankBlock.Clear();
         instance = this;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        sortRankBlock.Clear();
-
-        SortBlocks();
-    }
-
-    public void SortBlockByQueue()
-    {
-
-    }
-
+    // // Start is called before the first frame update
+    // void Start()
+    // {
+    //     SortBlocks();
+    // }
+    
     public  int GetNumberInList(Block b)
     {
         if (sortRankBlock.Contains(b))
@@ -43,18 +37,14 @@ public class SortBlock : MonoBehaviour
             sortRankBlock[i].GetComponent<SpriteRenderer>().sortingOrder = (sortRankBlock.IndexOf(sortRankBlock[i]) + 1);
 
             foreach (SpriteRenderer c in sortRankBlock[i].GetComponentsInChildren<SpriteRenderer>())
-            {
                 c.sortingOrder = (sortRankBlock.IndexOf(sortRankBlock[i]) + 1);
-            }
-
         }
     }
 
     public void SortOrderDuringDrag(Block b)
     {
         foreach (SpriteRenderer c in b.GetComponentsInChildren<SpriteRenderer>())
-        {
             c.sortingOrder = b.GetComponent<SpriteRenderer>().sortingOrder;
-        }
+        
     }
 }

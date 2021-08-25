@@ -12,6 +12,8 @@ public class BlockStore : MonoBehaviour
 
     void Start()
     {
+        blocks = GameManager.instance.blockData;
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         startX = (int)(spriteRenderer.bounds.size.x * -0.5f);        
 
@@ -70,7 +72,6 @@ public struct DisplayPos
             spacing = 1;
 
         int alignX = (int)(spriteRect.bounds.size.x / count) * idx + spacing;// + (int)(blockX * 0.5f);
-        Debug.Log(alignX);
         return alignX;
     }
 

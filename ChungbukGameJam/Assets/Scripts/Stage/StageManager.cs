@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    public CreateMap createMap;
-    public List<GameObject> blocks = new List<GameObject>();
+    public int stageIdx = 0;
+    public StageData stageData;
+    public BlockStore blockStore;
 
-    void Start()
+    public void InstantiateBlocks()
     {
-        
-        createMap = (CreateMap)FindObjectOfType(typeof(CreateMap));
+        blockStore = FindObjectOfType<BlockStore>();
+
+        if (stageData)
+            for (int i = 0; i < stageData.blocks.Count; i++)
+                for (int j = 0; j < stageData.blocks[i].num; j++)
+                {
+                    GameObject blockObj = Instantiate(stageData.blocks[i].block).gameObject;
+                    blockObj.transform.SetParent(blockStore.transform);
+                }
     }
 
-    void Update()
+    public void SetTileMapToCreateMap()
     {
-        
+        if (stageData)
+        {
+            CreateMap.instance.map_size = stageData.map_size;
+            CreateMap.instance.MAP = stageData.MAP;
+        }
     }
 }
