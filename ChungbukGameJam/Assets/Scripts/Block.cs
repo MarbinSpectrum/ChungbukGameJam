@@ -5,6 +5,8 @@ using Sirenix.OdinInspector;
 
 public class Block : SerializedMonoBehaviour
 {
+    public const float shrinkRate = .5f;
+    public const float enlargeRate = 2f;
     public const int baseSortNum = 0;
     public const int nowBlockSortNum = 99;
 
@@ -13,6 +15,8 @@ public class Block : SerializedMonoBehaviour
 
     public static Block nowBlock;
     private int Block_size = 1;
+
+    bool isSizeModified = false;
 
     [Title("크기")]
     [GUIColor(0, 1, 0)]
@@ -49,6 +53,7 @@ public class Block : SerializedMonoBehaviour
 
         GameObject temp = transform.GetChild(0).gameObject;
         blocks = new GameObject[block_size, block_size];
+
         for (int r = 0; r < Block_size; r++)
             for (int c = 0; c < Block_size; c++)
             {
@@ -61,11 +66,11 @@ public class Block : SerializedMonoBehaviour
 
         UpdateBlockState();
         temp.SetActive(false);
+        ControllSize(shrinkRate);
+
         transform.position = GameManager.ConvertCeilVec(transform.position);
         basePos = transform.position;
-
     }
-
 
     private void UpdateBlockState()
     {
@@ -75,6 +80,12 @@ public class Block : SerializedMonoBehaviour
     }
 
     private Vector2 offset;
+
+    private void OnMouseDown()
+    {
+        if(!isSizeModified)
+            ControllSize(enlargeRate);
+    }
 
     private void OnMouseDrag()
     {
@@ -87,6 +98,13 @@ public class Block : SerializedMonoBehaviour
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
 
         nowBlock = this;
+
+        // if(!isDragging)
+        //     if(BlockStore.boundSizeY < transform.position.y)
+        //         ControllSize(enlargeRate);
+        //     else
+        //         ControllSize(shrinkRate);
+        // isDragging = true;
 
         foreach (SpriteRenderer sprite in spriteRenderers)
             sprite.sortingOrder = nowBlockSortNum;
@@ -119,6 +137,14 @@ public class Block : SerializedMonoBehaviour
         if (!SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Add(this);
         SortBlock.instance.SortBlocks();
+
+        // 블록이 blockStore의 윗부분보다 아래에 있을 경우 
+        if(BlockStore.boundSizeY >= transform.TransformPoint(transform.position.x,transform.position.y,transform.position.z).y)
+        {
+            ControllSize(shrinkRate);
+            print(transform.TransformPoint(transform.position.x,transform.position.y,transform.position.z).y);
+        }
+            
     }
 
     private Vector2 clickPos;
@@ -243,6 +269,21 @@ public class Block : SerializedMonoBehaviour
     public void ReturnToBasePos()
     {
         transform.position = basePos;
+    }
+
+    public void ControllSize(float rate)
+    {
+        for (int r = 0; r < blocks.GetLength(1); r++)
+            for (int c = 0; c < blocks.GetLength(0); c++)
+            {
+                blocks[c, r].gameObject.transform.localScale *= rate;
+                blocks[c, r].gameObject.transform.localPosition *= rate;
+            }
+
+        if(rate > 1f)
+            isSizeModified = true;
+        else
+            isSizeModified = false;
     }
 }
 
