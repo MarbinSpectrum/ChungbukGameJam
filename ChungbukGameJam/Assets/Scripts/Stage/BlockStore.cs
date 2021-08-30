@@ -21,8 +21,7 @@ public class BlockStore : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         boundSizeY = (int)(-spriteRenderer.bounds.size.y * 0.5f + transform.position.y); // transform.position.y;
-        print(boundSizeY);
-        startX = (int)(spriteRenderer.bounds.size.x * -0.5f);
+        startX = (int)(spriteRenderer.bounds.size.x * -0.5f + transform.position.x);
 
         if (blocks.Count > 0)
         {

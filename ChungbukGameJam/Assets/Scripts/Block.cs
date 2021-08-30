@@ -5,8 +5,8 @@ using Sirenix.OdinInspector;
 
 public class Block : SerializedMonoBehaviour
 {
-    public const float shrinkRate = .5f;
-    public const float enlargeRate = 2f;
+    public const float shrinkRate = .4f;
+    public const float enlargeRate = 2.5f;
     public const int baseSortNum = 0;
     public const int nowBlockSortNum = 99;
 
@@ -69,23 +69,16 @@ public class Block : SerializedMonoBehaviour
         ControllSize(shrinkRate);
 
         transform.position = GameManager.ConvertCeilVec(transform.position);
-        basePos = transform.position;
     }
 
     private void UpdateBlockState()
     {
         for (int r = 0; r < Block_size; r++)
             for (int c = 0; c < Block_size; c++)
-                blocks[c, r].SetActive(MAP[c, r]);
+                blocks[c, r].SetActive(MAP[c, r]); 
     }
 
     private Vector2 offset;
-
-    private void OnMouseDown()
-    {
-        if(!isSizeModified)
-            ControllSize(enlargeRate);
-    }
 
     private void OnMouseDrag()
     {
@@ -99,12 +92,17 @@ public class Block : SerializedMonoBehaviour
 
         nowBlock = this;
 
-        // if(!isDragging)
-        //     if(BlockStore.boundSizeY < transform.position.y)
-        //         ControllSize(enlargeRate);
-        //     else
-        //         ControllSize(shrinkRate);
-        // isDragging = true;
+        if (BlockStoreTileMap.tileStorePos.y < transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
+            if (!isSizeModified)
+                ControllSize(enlargeRate);
+
+        if (BlockStoreTileMap.tileStorePos.y > transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
+            if (isSizeModified)
+                ControllSize(shrinkRate);
+
+        // CheckShrinkArea();
+        // else
+        //     ControllSize(shrinkRate);
 
         foreach (SpriteRenderer sprite in spriteRenderers)
             sprite.sortingOrder = nowBlockSortNum;
@@ -139,12 +137,9 @@ public class Block : SerializedMonoBehaviour
         SortBlock.instance.SortBlocks();
 
         // 블록이 blockStore의 윗부분보다 아래에 있을 경우 
-        if(BlockStore.boundSizeY >= transform.TransformPoint(transform.position.x,transform.position.y,transform.position.z).y)
-        {
-            ControllSize(shrinkRate);
-            print(transform.TransformPoint(transform.position.x,transform.position.y,transform.position.z).y);
-        }
-            
+        // if (BlockStoreTileMap.tileStorePos.y > transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
+        //     if(isSizeModified)
+        //         ControllSize(shrinkRate);
     }
 
     private Vector2 clickPos;
@@ -187,6 +182,7 @@ public class Block : SerializedMonoBehaviour
     {
         return OverLapBlock(GetBlocksArray());
     }
+
     public bool OverLapBlock(List<Vector2> list)
     {
         HashSet<Vector2> Set = new HashSet<Vector2>();
@@ -215,23 +211,22 @@ public class Block : SerializedMonoBehaviour
     {
         List<Vector2> list = new List<Vector2>();
 
-        {
-            clickPos = GameManager.ConvertCeilVec(clickPos);
-            Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
-            Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
-            Vector2 offsetTemp = newCenterPos - clickPos;
-            Vector2 mainPos = (Vector2)transform.position - offsetTemp;
-            mainPos = new Vector2(mainPos.x, mainPos.y);
+        clickPos = GameManager.ConvertCeilVec(clickPos);
+        Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
+        Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
+        Vector2 offsetTemp = newCenterPos - clickPos;
+        Vector2 mainPos = (Vector2)transform.position - offsetTemp;
+        mainPos = new Vector2(mainPos.x, mainPos.y);
 
-            for (int c = 0; c < block_size; c++)
-                for (int r = 0; r < block_size; r++)
-                    if (MAP[c, r])
-                    {
-                        Vector2 temp = blocks[block_size - 1 - r, c].transform.localPosition;
-                        Vector2 newVec = new Vector2(mainPos.x + temp.x, mainPos.y + temp.y);
-                        list.Add(newVec);
-                    }
-        }
+        for (int c = 0; c < block_size; c++)
+            for (int r = 0; r < block_size; r++)
+                if (MAP[c, r])
+                {                        
+                    Vector2 temp = blocks[block_size - 1 - r, c].transform.localPosition;
+                    Vector2 newVec = new Vector2(mainPos.x + temp.x, mainPos.y + temp.y);
+                    list.Add(newVec);
+                }
+
         int inTheBlockCount = GameManager.InTheBlockCount(this, list);
         return !((0 < inTheBlockCount && inTheBlockCount < GetBlockCount()) || OverLapBlock(list));
     }
@@ -254,21 +249,44 @@ public class Block : SerializedMonoBehaviour
                 for (int c = 0; c < block_size; c++)
                     for (int r = 0; r < block_size; r++)
                         MAP[c, r] = temp[c, r];
+
                 UpdateBlockState();
 
                 clickPos = GameManager.ConvertCeilVec(clickPos);
                 Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
                 Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
                 Vector3 offsetTemp = newCenterPos - clickPos;
+
                 transform.position -= offsetTemp;
+                
                 GameManager.bv = GameManager.ConvertTileVec(transform.position);
             }
         }
     }
 
-    public void ReturnToBasePos()
+    public (int, int) GetBlockRealSize()
     {
-        transform.position = basePos;
+        int realX = 0, realY = 0;
+
+        for (int x = 0; x < block_size; x++)
+            for (int y = 0; y < block_size; y++)
+                if (MAP[x, y])
+                {
+                    if (x >= realX)
+                        realX = x + 1;
+
+                    if (y >= realY)
+                        realY = y + 1;
+                }
+        return (realX, realY);
+    }
+
+    public void CheckShrinkArea()
+    {
+        if (BlockStoreTileMap.tileStorePos.y > transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
+            ControllSize(shrinkRate);
+        else
+            ControllSize(enlargeRate);
     }
 
     public void ControllSize(float rate)
@@ -280,10 +298,15 @@ public class Block : SerializedMonoBehaviour
                 blocks[c, r].gameObject.transform.localPosition *= rate;
             }
 
-        if(rate > 1f)
+        if (rate > 1f)
             isSizeModified = true;
         else
             isSizeModified = false;
     }
-}
 
+
+    public void ReturnToBasePos() => transform.position = basePos;
+
+    public void SetBasePos(Vector2 vec) => basePos = vec;
+
+}

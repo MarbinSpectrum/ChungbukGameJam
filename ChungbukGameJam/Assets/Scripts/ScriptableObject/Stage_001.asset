@@ -26,10 +26,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2Int, UnityEngine.CoreModule
     - Name: 
       Entry: 3
-      Data: 2
+      Data: 10
     - Name: 
       Entry: 3
-      Data: 2
+      Data: 10
     - Name: 
       Entry: 8
       Data: 
@@ -38,10 +38,298 @@ MonoBehaviour:
       Data: 0|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
-      Data: 4
+      Data: 100
     - Name: ranks
       Entry: 1
-      Data: 2|2
+      Data: 10|10
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 5
       Data: true
@@ -63,5 +351,33 @@ MonoBehaviour:
   stageID: 100001
   stageName: "\uC2A4\uD14C\uC774\uC9C0 \uC774\uB984\uC744 \uB123\uC5B4\uC8FC\uC138\uC694."
   blocks:
-  - block: {fileID: 3161455233265005072, guid: 108c41cd55404ce4f95d2c64c862140e, type: 3}
+  - block: {fileID: 4034733983945147071, guid: 31b6410c25f07894e9a74929e6d47c6e, type: 3}
+    num: 1
+  - block: {fileID: 584802127770827655, guid: a6a0e359def82a449886570e6897bc9e, type: 3}
+    num: 1
+  - block: {fileID: 1148326348255444594, guid: 597bcecd25f976a47a4399a0f78b9e14, type: 3}
+    num: 2
+  - block: {fileID: 648781694435411904, guid: 419b88685265b7f4496606410d105a9e, type: 3}
+    num: 3
+  - block: {fileID: 632333660675854783, guid: 52873fc381dd1174eb5a381d963d613e, type: 3}
+    num: 2
+  - block: {fileID: 5593267450376592944, guid: d2ab39bc525763f458644b7ea89472dd, type: 3}
+    num: 1
+  - block: {fileID: 3158215935679657400, guid: 9b31af9174d47fd4da3c711d022faffe, type: 3}
+    num: 1
+  - block: {fileID: 6257677890418121571, guid: b2017eb8347717d4aa98ad44bbd33c06, type: 3}
+    num: 3
+  - block: {fileID: 3282708413904717026, guid: dd3c02f62c3564b48b22c327b006525b, type: 3}
+    num: 1
+  - block: {fileID: 7572214271472097210, guid: 72d8f65a6113d0e45bf2add6eb9a940e, type: 3}
+    num: 3
+  - block: {fileID: 3526703644587968585, guid: f9301bd6303f00a4392810533b60c6c8, type: 3}
+    num: 1
+  - block: {fileID: 2619844420289260318, guid: ce8af8085b8f1b64cb9de4c762dc613b, type: 3}
+    num: 1
+  - block: {fileID: 3814177493960974877, guid: e2f017d329a09014a96f4ace54f3dd5e, type: 3}
+    num: 1
+  - block: {fileID: 5955067243683909885, guid: d887402bdece22f4e8ef299993ca1a0b, type: 3}
+    num: 1
+  - block: {fileID: 1301074170618034899, guid: 132f436e7b4aea74ab55a0d662c37c05, type: 3}
     num: 2
