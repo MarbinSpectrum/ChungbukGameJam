@@ -5,25 +5,35 @@ using UnityEngine;
 public class BlockStoreTileMap : MonoBehaviour
 {
     public static Vector2 tileStorePos;
-    public static float cellSize = .4f;
-    public float CellSize
-    {
-        get { return cellSize; }
-        set { cellSize = value; }
-    }
+
     public int cellX, cellY;
 
     public Tile basicTile;
     public Tile[,] tiles;
 
-    public static int boundSizeY;
+    public static float boundSizeY;
 
     public Transform tileStore;
     StageManager stageManager;
     SpriteRenderer spriteRenderer;
 
-    private void Awake() {
-        tileStorePos = ((Vector2)transform.position + new Vector2(0,cellY)) * CellSize;
+    private void Awake()
+    {
+        // transform.position = Vector3.zero;
+        // tileStore.transform.position = Vector3.zero;
+         tileStorePos = transform.position;
+
+        // Vector2 basePos = Vector2.zero;
+        // basePos.x = -Block.shrinkRate * (cellX) * 0.5f;
+        // basePos.y = -Block.shrinkRate * (cellY) * 1.25f;
+
+        // transform.position += (Vector3)basePos;
+        // tileStore.transform.position += (Vector3)basePos;
+        // tileStorePos += basePos;
+        // tileStorePos = ((Vector2)tileStore.transform.position) * Block.enlargeRate;
+        // tileStorePos.x -= (cellX - 1) * Block.enlargeRate;
+        // tileStore.transform.position = tileStorePos;
+
     }
 
     private void Start()
@@ -33,21 +43,20 @@ public class BlockStoreTileMap : MonoBehaviour
         stageManager = FindObjectOfType<StageManager>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        boundSizeY = (int)(-spriteRenderer.bounds.size.y * 0.5f + transform.position.y); // transform.position.y;
-
+        boundSizeY = (cellX * Block.curSize); // transform.position.y;
 
         for (int i = 0; i < cellX; i++)
         {
             for (int j = 0; j < cellY; j++)
             {
                 Tile tempTile = Instantiate(basicTile);
-                tempTile.transform.localScale = Vector3.one * CellSize;
-                tempTile.transform.localPosition = new Vector3(i * CellSize + tileStore.position.x, j * CellSize + boundSizeY, 0);
+                tempTile.transform.localScale *= Block.curSize;
+                tempTile.transform.position = new Vector3(i * Block.curSize, j * Block.curSize, 0) + transform.position;
                 tempTile.transform.SetParent(tileStore);
                 tempTile.gameObject.SetActive(true);
                 tiles[i, j] = tempTile;
             }
-        }
+        }        
 
         CreateOutline();
         AllocatePosToBlock();
@@ -102,35 +111,38 @@ public class BlockStoreTileMap : MonoBehaviour
             Block block = GameManager.instance.blockData[b];
             block.transform.position = Vector3.zero;
 
+            pointY = 0;
+
             // 다음 블록이 수용 공간에서 벗어날 경우, 위로 블록을 보냄.
-            if (cellX < Mathf.RoundToInt(pointX + block.block_size))
+            // 양옆의 테두리 칸(1)을 빼기 위해서 cellX -2를 해줌
+            if (cellX - 2 < pointX + block.GetBlockRealSize().Item1)
             {
                 idxX = 0;
                 idxY++;
                 pointX = 0;
             }
 
-            pointY = 0;
-
             // 얼마나 위로 올라가야하는 지 계산.
             // pointX, pointY에 +1을 해주는 이유: 이격 거리 생성.
             if (idxY > 0)
             {
-                for(int y = 0; y < idxY; y++)
+                for (int y = 0; y < idxY; y++)
                     pointY += landedBlocks[idxX, y].GetBlockRealSize().Item2 + 1;
                 pointY += block.GetBlockRealSize().Item2 - 1;
             }
             else
                 pointY = block.GetBlockRealSize().Item2 - 1;
 
-            Vector2 tempPos = (Vector2)tiles[1,1].transform.position;
-            tempPos += new Vector2(pointX, pointY) * cellSize;
+            Vector2 tempPos = (Vector2)tiles[1, 1].transform.position;
+            tempPos += new Vector2(pointX, pointY) * Block.curSize;
 
             pointX += block.GetBlockRealSize().Item1 + 1;
 
             block.transform.position = tempPos;
             block.SetBasePos(tempPos);
             landedBlocks[idxX, idxY] = block;
+
+            // print(block.name + ": " + "landedBlocks[" + idxX+"," + idxY+ "]");
 
             idxX++;
         }

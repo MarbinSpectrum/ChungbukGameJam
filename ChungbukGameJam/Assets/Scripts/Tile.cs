@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
+    [SerializeField]
     bool isFill;
     private SpriteRenderer SpriteRenderer;
 

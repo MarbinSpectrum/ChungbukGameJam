@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
         stageManager = FindObjectOfType<StageManager>();
 
         stageManager.InstantiateBlocks();
-        stageManager.SetTileMapToCreateMap();
+        // stageManager.SetTileMapToCreateMap();
 
         Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
 
@@ -51,30 +51,32 @@ public class GameManager : MonoBehaviour
 
     public static Vector2 ConvertCeilVec(Vector2 v)
     {
-        if (GameManager.map_size.x % 2 == 1)
-            v.x += 0.5f;
-        v.x = Mathf.FloorToInt(v.x);
-        if (GameManager.map_size.x % 2 == 0)
-            v.x += 0.5f;
+        float tempX = (v.x / Block.curSize);
+        float tempY = (v.y / Block.curSize);
 
-        if (GameManager.map_size.y % 2 == 1)
-            v.y += 0.5f;
-        v.y = Mathf.FloorToInt(v.y);
-        if (GameManager.map_size.y % 2 == 0)
-            v.y += 0.5f;
+        if (tempX < 0)
+            v.x = (int)tempX * Block.curSize - 0.5f * Block.curSize;
+        else
+            v.x = (int)tempX * Block.curSize + 0.5f * Block.curSize;
+
+        if (tempY < 0)
+            v.y = (int)tempY * Block.curSize - 0.5f * Block.curSize;
+        else
+            v.y = (int)tempY * Block.curSize + 0.5f * Block.curSize;
+
         return v;
     }
 
     public static Vector2 ConvertTileVec(Vector2 v)
     {
-        v.x += (CreateMap.OBJ_X * (map_size.x - 1)) * 0.5f - (int)CreateMap.instance.transform.position.x;
-        v.x += 0.5f;
-        v.x = Mathf.FloorToInt(v.x);
+        v.x += (Block.curSize * (map_size.x - 1)) * 0.5f - CreateMap.instance.transform.position.x;
+         v.x += Block.curSize * 0.5f;
+        // v.x = Mathf.FloorToInt(v.x);
 
         v.y = -v.y;
-        v.y += (CreateMap.OBJ_Y * (map_size.y - 1)) * 0.5f + (int)CreateMap.instance.transform.position.y;
-        v.y += 0.5f;
-        v.y = Mathf.FloorToInt(v.y);
+        v.y += (Block.curSize * (map_size.y - 1)) * 0.5f + CreateMap.instance.transform.position.y;
+        v.y += Block.curSize * 0.5f;
+        // v.y = Mathf.FloorToInt(v.y);
         return v;
     }
 
@@ -124,6 +126,9 @@ public class GameManager : MonoBehaviour
     // 기획팀과 상의한 뒤, 이 기능이 필요한 지 물어보도록 하자.
     public void SettingCheck(bool isRelease)
     {
+        int transedX = (int)(bv.x / Block.curSize);
+        int transedY = (int)(bv.y / Block.curSize);
+
         bool[,] tileState = new bool[map_size.x, map_size.y];
         if (Block.nowBlock)
         {
@@ -133,12 +138,12 @@ public class GameManager : MonoBehaviour
                     for (int c = 0; c < map_size.x; c++)
                         Tile[c, r].SetIsFill(false);
 
-                for (int r = Mathf.Max(0, (int)bv.y); r < Mathf.Min(createMap.map_size.y, bv.y + Block.nowBlock.block_size); r++)
-                    for (int c = Mathf.Max(0, (int)bv.x); c < Mathf.Min(createMap.map_size.x, bv.x + Block.nowBlock.block_size); c++)
+                for (int r = Mathf.Max(0, transedY); r < Mathf.Min(createMap.map_size.y, transedY+ Block.nowBlock.block_size); r++)
+                    for (int c = Mathf.Max(0, transedX); c < Mathf.Min(createMap.map_size.x, transedX + Block.nowBlock.block_size); c++)
                     {
                         // 타일맵 좌표
-                        int ac = c - (int)bv.x; // 0
-                        int ar = r - (int)bv.y; // 2
+                        int ac = c - transedX; // 0
+                        int ar = r - transedY; // 2
 
                         if (Block.nowBlock.MAP[ac, ar])
                             tileState[c, r] = true;
@@ -203,3 +208,32 @@ public class GameManager : MonoBehaviour
         CheckVictoryDele?.Invoke();
     }
 }
+
+    // public static Vector2 ConvertCeilVec(Vector2 v)
+    // {
+    //     if (GameManager.map_size.x % 2 == 1)
+    //         v.x += 0.5f;
+    //     v.x = Mathf.FloorToInt(v.x);
+    //     if (GameManager.map_size.x % 2 == 0)
+    //         v.x += 0.5f;
+
+    //     if (GameManager.map_size.y % 2 == 1)
+    //         v.y += 0.5f;
+    //     v.y = Mathf.FloorToInt(v.y);
+    //     if (GameManager.map_size.y % 2 == 0)
+    //         v.y += 0.5f;
+    //     return v;
+    // }
+
+    // public static Vector2 ConvertTileVec(Vector2 v)
+    // {
+    //     v.x += (CreateMap.OBJ_X * (map_size.x - 1)) * 0.5f - (int)CreateMap.instance.transform.position.x;
+    //     v.x += 0.5f;
+    //     v.x = Mathf.FloorToInt(v.x);
+
+    //     v.y = -v.y;
+    //     v.y += (CreateMap.OBJ_Y * (map_size.y - 1)) * 0.5f + (int)CreateMap.instance.transform.position.y;
+    //     v.y += 0.5f;
+    //     v.y = Mathf.FloorToInt(v.y);
+    //     return v;
+    // }

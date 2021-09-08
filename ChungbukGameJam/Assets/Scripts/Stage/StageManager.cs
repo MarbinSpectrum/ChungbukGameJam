@@ -21,12 +21,12 @@ public class StageManager : MonoBehaviour
                 }
     }
 
-    public void SetTileMapToCreateMap()
-    {
-        if (stageData)
-        {
-            CreateMap.instance.map_size = stageData.map_size;
-            CreateMap.instance.MAP = stageData.MAP;
-        }
-    }
+    // public void SetTileMapToCreateMap()
+    // {
+    //     if (stageData)
+    //     {
+    //         CreateMap.instance.map_size = stageData.map_size;
+    //         CreateMap.instance.MAP = stageData.MAP;
+    //     }
+    // }
 }

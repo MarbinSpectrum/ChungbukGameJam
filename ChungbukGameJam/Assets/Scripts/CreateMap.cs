@@ -40,26 +40,33 @@ public class CreateMap : SerializedMonoBehaviour
 
     /////////////////////////////////////////////////////////////////
 
-    public const float OBJ_X = 1;
-    public const float OBJ_Y = 1;
+    public const float OBJ_X = 0.5f;
+    public const float OBJ_Y = 0.5f;
 
     private void Awake()
     {
         instance = this;
+
+        // Vector2 basePos = Vector2.zero;
+        // basePos.x = -Block.enlargeRate * (MAP_SIZE.x) * 0.5f;
+        // basePos.y = Block.enlargeRate * (MAP_SIZE.y);
+        // transform.position = basePos + Vector2.one * Block.enlargeRate * 0.5f; 
+        //new Vector2(-Block.enlargeRate * 0.5f, -Block.enlargeRate * 0.5f);
     }
 
     public void CreateMAP()
     {
         Tile temp = transform.GetChild(0).GetComponent<Tile>();
-        float startX = -(OBJ_X * (MAP_SIZE.x - 1)) * 0.5f ;
-        float startY = +(OBJ_Y * (MAP_SIZE.y - 1)) * 0.5f ;
+        float startX = -(Block.enlargeRate * (MAP_SIZE.x - 1)) * 0.5f;
+        float startY = +(Block.enlargeRate * (MAP_SIZE.y - 1)) * 0.5f;
 
         for (int r = 0; r < MAP_SIZE.y; r++)
             for (int c = 0; c < MAP_SIZE.x; c++)
             {
                 Tile obj = Instantiate(temp);
                 obj.transform.SetParent(transform);
-                obj.transform.localPosition = new Vector3(startX + c * OBJ_X, startY - r * OBJ_Y, temp.transform.position.z);
+                obj.transform.localScale *= Block.enlargeRate;
+                obj.transform.localPosition = new Vector3(c * Block.enlargeRate + startX, - r * Block.enlargeRate + startY, temp.transform.position.z);
                 obj.gameObject.SetActive(MAP[c, r]);
                 GameManager.Tile[c, r] = obj;
             }

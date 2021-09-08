@@ -5,8 +5,10 @@ using Sirenix.OdinInspector;
 
 public class Block : SerializedMonoBehaviour
 {
-    public const float shrinkRate = .4f;
-    public const float enlargeRate = 2.5f;
+
+    public static float curSize = 0;
+    public const float shrinkRate = .35f;
+    public const float enlargeRate = 0.75f;
     public const int baseSortNum = 0;
     public const int nowBlockSortNum = 99;
 
@@ -38,8 +40,8 @@ public class Block : SerializedMonoBehaviour
 
     /////////////////////////////////////////////////////////////////
 
-    private const float OBJ_X = 1;
-    private const float OBJ_Y = 1;
+    // private const float OBJ_X = 1f;
+    // private const float OBJ_Y = 1f;
 
     GameObject[,] blocks;
 
@@ -47,6 +49,8 @@ public class Block : SerializedMonoBehaviour
 
     private void Start()
     {
+        curSize = shrinkRate;
+
         GameManager.instance.blockData.Add(this);
         SortBlock.instance.sortRankBlock.Add(this);
         SortBlock.instance.SortBlocks();
@@ -59,14 +63,15 @@ public class Block : SerializedMonoBehaviour
             {
                 GameObject obj = Instantiate(temp);
                 obj.transform.SetParent(transform);
-                obj.transform.localPosition = new Vector3(c * OBJ_X, -r * OBJ_Y, temp.transform.position.z);
+                obj.transform.localScale *= curSize;
+                obj.transform.localPosition = new Vector3(c * curSize, -r * curSize, temp.transform.position.z);
                 blocks[c, r] = obj;
                 spriteRenderers.Add(obj.GetComponent<SpriteRenderer>());
             }
 
         UpdateBlockState();
         temp.SetActive(false);
-        ControllSize(shrinkRate);
+        // ControllSize(shrinkRate);
 
         transform.position = GameManager.ConvertCeilVec(transform.position);
     }
@@ -75,7 +80,7 @@ public class Block : SerializedMonoBehaviour
     {
         for (int r = 0; r < Block_size; r++)
             for (int c = 0; c < Block_size; c++)
-                blocks[c, r].SetActive(MAP[c, r]); 
+                blocks[c, r].SetActive(MAP[c, r]);
     }
 
     private Vector2 offset;
@@ -87,22 +92,19 @@ public class Block : SerializedMonoBehaviour
             offset = (Vector2)transform.position - v;
         if (clickPos == Vector2.zero)
             clickPos = v;
-        transform.position = v + offset;
+
+        transform.position = (v + offset);
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
 
         nowBlock = this;
 
-        if (BlockStoreTileMap.tileStorePos.y < transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
+        if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY + transform.position.y * Block.shrinkRate <= transform.position.y * Block.enlargeRate)
             if (!isSizeModified)
                 ControllSize(enlargeRate);
 
-        if (BlockStoreTileMap.tileStorePos.y > transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
+        if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY - transform.position.y * Block.enlargeRate > transform.position.y * Block.enlargeRate)
             if (isSizeModified)
                 ControllSize(shrinkRate);
-
-        // CheckShrinkArea();
-        // else
-        //     ControllSize(shrinkRate);
 
         foreach (SpriteRenderer sprite in spriteRenderers)
             sprite.sortingOrder = nowBlockSortNum;
@@ -124,7 +126,9 @@ public class Block : SerializedMonoBehaviour
         offset = Vector2.zero;
         clickPos = Vector2.zero;
 
+        //print("전:" + transform.position);
         transform.position = GameManager.ConvertCeilVec(transform.position);
+        //print("후:" + transform.position);
 
         DragDelegate.CallInvoke(true);
 
@@ -147,8 +151,8 @@ public class Block : SerializedMonoBehaviour
     {
         Vector2 ret;
         angle = angle * Mathf.Deg2Rad;
-        ret.x = (p.x - pivot.x) * Mathf.Cos(angle) - (p.y - pivot.y) * Mathf.Sin(angle) + pivot.x;
-        ret.y = (p.x - pivot.x) * Mathf.Sin(angle) + (p.y - pivot.y) * Mathf.Cos(angle) + pivot.y;
+        ret.x = (p.x - pivot.x)  * Mathf.Cos(angle) - (p.y - pivot.y) * Mathf.Sin(angle) + pivot.x;
+        ret.y = (p.x - pivot.x)  * Mathf.Sin(angle) + (p.y - pivot.y) * Mathf.Cos(angle) + pivot.y;
 
         return ret;
     }
@@ -212,7 +216,7 @@ public class Block : SerializedMonoBehaviour
         List<Vector2> list = new List<Vector2>();
 
         clickPos = GameManager.ConvertCeilVec(clickPos);
-        Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
+        Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
         Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
         Vector2 offsetTemp = newCenterPos - clickPos;
         Vector2 mainPos = (Vector2)transform.position - offsetTemp;
@@ -221,7 +225,7 @@ public class Block : SerializedMonoBehaviour
         for (int c = 0; c < block_size; c++)
             for (int r = 0; r < block_size; r++)
                 if (MAP[c, r])
-                {                        
+                {
                     Vector2 temp = blocks[block_size - 1 - r, c].transform.localPosition;
                     Vector2 newVec = new Vector2(mainPos.x + temp.x, mainPos.y + temp.y);
                     list.Add(newVec);
@@ -233,17 +237,27 @@ public class Block : SerializedMonoBehaviour
 
     private void OnMouseUpAsButton()
     {
-        if (Vector2.Distance(clickPos, Camera.main.ScreenToWorldPoint(Input.mousePosition)) <= 0.01f)
+        Vector2 posFromCamera = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        if (Input.touchCount > 0)
+            posFromCamera = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+        //Touch touch = Input.GetTouch(0);
+
+        if (Vector2.Distance(clickPos, posFromCamera) <= 1f)
         {
             if (CanRotate(clickPos))
             {
-                Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
+                print(GetBlockRealSize().Item1);
+                print(GetBlockRealSize().Item2);
+
+                Vector2 centerPos = new Vector2(GetBlockRealSize().Item1 - 1, GetBlockRealSize().Item2 - 1) * 0.5f;
+                // Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
+
                 bool[,] temp = new bool[Block_size, Block_size];
                 for (int c = 0; c < block_size; c++)
                     for (int r = 0; r < block_size; r++)
                     {
                         temp[block_size - 1 - r, c] = MAP[c, r];
-                        // MAP[c, r] = temp[c, r];
                     }
 
                 for (int c = 0; c < block_size; c++)
@@ -253,12 +267,12 @@ public class Block : SerializedMonoBehaviour
                 UpdateBlockState();
 
                 clickPos = GameManager.ConvertCeilVec(clickPos);
-                Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1) * 0.5f, -(block_size - 1) * 0.5f);
+                Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
                 Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
                 Vector3 offsetTemp = newCenterPos - clickPos;
 
                 transform.position -= offsetTemp;
-                
+
                 GameManager.bv = GameManager.ConvertTileVec(transform.position);
             }
         }
@@ -281,24 +295,21 @@ public class Block : SerializedMonoBehaviour
         return (realX, realY);
     }
 
-    public void CheckShrinkArea()
-    {
-        if (BlockStoreTileMap.tileStorePos.y > transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
-            ControllSize(shrinkRate);
-        else
-            ControllSize(enlargeRate);
-    }
-
     public void ControllSize(float rate)
     {
+        curSize = rate;
+
         for (int r = 0; r < blocks.GetLength(1); r++)
             for (int c = 0; c < blocks.GetLength(0); c++)
             {
+                blocks[c, r].gameObject.transform.localScale = Vector3.one;
+                blocks[c, r].gameObject.transform.localPosition = new Vector3(c, -r, 0);
+
                 blocks[c, r].gameObject.transform.localScale *= rate;
                 blocks[c, r].gameObject.transform.localPosition *= rate;
             }
 
-        if (rate > 1f)
+        if (rate > enlargeRate - shrinkRate)
             isSizeModified = true;
         else
             isSizeModified = false;
@@ -308,5 +319,7 @@ public class Block : SerializedMonoBehaviour
     public void ReturnToBasePos() => transform.position = basePos;
 
     public void SetBasePos(Vector2 vec) => basePos = vec;
+
+    public void SetCurSize(float s) => curSize = s;
 
 }
