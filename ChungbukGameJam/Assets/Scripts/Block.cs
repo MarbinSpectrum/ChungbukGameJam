@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 public class Block : SerializedMonoBehaviour
 {
 
-    public static float curSize = 0;
+    public float curSize = 0;
     public const float shrinkRate = .35f;
     public const float enlargeRate = 0.75f;
     public const int baseSortNum = 0;

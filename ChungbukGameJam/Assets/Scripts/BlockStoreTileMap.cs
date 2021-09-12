@@ -43,15 +43,15 @@ public class BlockStoreTileMap : MonoBehaviour
         stageManager = FindObjectOfType<StageManager>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        boundSizeY = (cellX * Block.curSize); // transform.position.y;
+        boundSizeY = (cellX * Block.shrinkRate); // transform.position.y;
 
         for (int i = 0; i < cellX; i++)
         {
             for (int j = 0; j < cellY; j++)
             {
                 Tile tempTile = Instantiate(basicTile);
-                tempTile.transform.localScale *= Block.curSize;
-                tempTile.transform.position = new Vector3(i * Block.curSize, j * Block.curSize, 0) + transform.position;
+                tempTile.transform.localScale *= Block.shrinkRate;
+                tempTile.transform.position = new Vector3(i * Block.shrinkRate, j * Block.shrinkRate, 0) + transform.position;
                 tempTile.transform.SetParent(tileStore);
                 tempTile.gameObject.SetActive(true);
                 tiles[i, j] = tempTile;
@@ -134,7 +134,7 @@ public class BlockStoreTileMap : MonoBehaviour
                 pointY = block.GetBlockRealSize().Item2 - 1;
 
             Vector2 tempPos = (Vector2)tiles[1, 1].transform.position;
-            tempPos += new Vector2(pointX, pointY) * Block.curSize;
+            tempPos += new Vector2(pointX, pointY) * block.curSize;
 
             pointX += block.GetBlockRealSize().Item1 + 1;
 

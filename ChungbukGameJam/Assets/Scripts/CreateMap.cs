@@ -60,6 +60,8 @@ public class CreateMap : SerializedMonoBehaviour
         float startX = -(Block.enlargeRate * (MAP_SIZE.x - 1)) * 0.5f;
         float startY = +(Block.enlargeRate * (MAP_SIZE.y - 1)) * 0.5f;
 
+        // transform.position += new Vector3(startX,startY);
+
         for (int r = 0; r < MAP_SIZE.y; r++)
             for (int c = 0; c < MAP_SIZE.x; c++)
             {
