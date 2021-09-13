@@ -164,7 +164,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5670796}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.2918425, y: -4.353626, z: -1.9673969}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stageIdx: 0
-  stageData: {fileID: 11400000, guid: 4a55149b2effbcf4f8e34f77393d7e38, type: 2}
+  stageData: {fileID: 11400000, guid: d04e2667f29990147a7226f7d350617b, type: 2}
   blockStore: {fileID: 1679798384}
 --- !u!114 &5670801
 MonoBehaviour:

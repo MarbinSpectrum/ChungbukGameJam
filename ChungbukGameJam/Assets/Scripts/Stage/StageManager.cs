@@ -7,7 +7,7 @@ public class StageManager : MonoBehaviour
     public int stageIdx = 0;
     public StageData stageData;
     public BlockStore blockStore;
-
+    
     public void InstantiateBlocks()
     {
         blockStore = FindObjectOfType<BlockStore>();

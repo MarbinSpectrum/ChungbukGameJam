@@ -316,7 +316,11 @@ public class Block : SerializedMonoBehaviour
     }
 
 
-    public void ReturnToBasePos() => transform.position = basePos;
+    public void ReturnToBasePos()
+    {
+        ControllSize(shrinkRate);
+        transform.position = basePos;
+    } 
 
     public void SetBasePos(Vector2 vec) => basePos = vec;
 

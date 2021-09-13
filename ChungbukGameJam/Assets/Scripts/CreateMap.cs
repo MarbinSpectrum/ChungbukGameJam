@@ -46,12 +46,6 @@ public class CreateMap : SerializedMonoBehaviour
     private void Awake()
     {
         instance = this;
-
-        // Vector2 basePos = Vector2.zero;
-        // basePos.x = -Block.enlargeRate * (MAP_SIZE.x) * 0.5f;
-        // basePos.y = Block.enlargeRate * (MAP_SIZE.y);
-        // transform.position = basePos + Vector2.one * Block.enlargeRate * 0.5f; 
-        //new Vector2(-Block.enlargeRate * 0.5f, -Block.enlargeRate * 0.5f);
     }
 
     public void CreateMAP()
@@ -60,7 +54,7 @@ public class CreateMap : SerializedMonoBehaviour
         float startX = -(Block.enlargeRate * (MAP_SIZE.x - 1)) * 0.5f;
         float startY = +(Block.enlargeRate * (MAP_SIZE.y - 1)) * 0.5f;
 
-        // transform.position += new Vector3(startX,startY);
+       // transform.position += new Vector3(0, startY,0);
 
         for (int r = 0; r < MAP_SIZE.y; r++)
             for (int c = 0; c < MAP_SIZE.x; c++)
