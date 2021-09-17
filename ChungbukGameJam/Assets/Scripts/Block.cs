@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Sirenix.OdinInspector;
 
 public class Block : SerializedMonoBehaviour
 {
-
-    public float curSize = 0;
     public const float shrinkRate = .35f;
     public const float enlargeRate = 0.75f;
     public const int baseSortNum = 0;
@@ -16,7 +15,11 @@ public class Block : SerializedMonoBehaviour
     private Vector2 basePos;
 
     public static Block nowBlock;
+    public float curSize = 0;
+    public float sizeControllY;
     private int Block_size = 1;
+    static RaycastHit2D hit2D;
+    CompositeCollider2D compositeCollider2D;
 
     bool isSizeModified = false;
 
@@ -37,12 +40,14 @@ public class Block : SerializedMonoBehaviour
 
     [Title("모양")]
     public bool[,] MAP;
+    
 
     /////////////////////////////////////////////////////////////////
 
     // private const float OBJ_X = 1f;
     // private const float OBJ_Y = 1f;
 
+    private Vector2 offset;
     GameObject[,] blocks;
 
     List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
@@ -50,6 +55,7 @@ public class Block : SerializedMonoBehaviour
     private void Start()
     {
         curSize = shrinkRate;
+        compositeCollider2D = GetComponent<CompositeCollider2D>();
 
         GameManager.instance.blockData.Add(this);
         SortBlock.instance.sortRankBlock.Add(this);
@@ -71,45 +77,48 @@ public class Block : SerializedMonoBehaviour
 
         UpdateBlockState();
         temp.SetActive(false);
-        // ControllSize(shrinkRate);
 
         transform.position = GameManager.ConvertCeilVec(transform.position);
     }
 
-    private void UpdateBlockState()
+    public void UpdateBlockState()
     {
         for (int r = 0; r < Block_size; r++)
             for (int c = 0; c < Block_size; c++)
                 blocks[c, r].SetActive(MAP[c, r]);
     }
 
-    private Vector2 offset;
-
-    private void OnMouseDrag()
+    public void DragBlock(Vector2 v)
     {
-        Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (offset == Vector2.zero)
-            offset = (Vector2)transform.position - v;
-        if (clickPos == Vector2.zero)
-            clickPos = v;
+        // nowBlock = this;
 
-        transform.position = (v + offset);
-        GameManager.bv = GameManager.ConvertTileVec(transform.position);
-
-        nowBlock = this;
-
-        if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY + transform.position.y * Block.shrinkRate <= transform.position.y * Block.enlargeRate)
+        if (sizeControllY < transform.position.y * enlargeRate)
+        {
             if (!isSizeModified)
                 ControllSize(enlargeRate);
-
-        if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY - transform.position.y * Block.enlargeRate > transform.position.y * Block.enlargeRate)
+        }
+        else
+        {
             if (isSizeModified)
                 ControllSize(shrinkRate);
+        }
+
+        if (offset == Vector2.zero)
+            offset = (Vector2)transform.position - v;
+
+        print("블록 현 위치: " + transform.position);
+        print("offset의 값은: " + offset);
+        print("거리: " + Vector2.Distance(v, transform.position));
+
+        // transform.position = v + offset;
+        transform.position = v + offset;
+
+        GameManager.bv = GameManager.ConvertTileVec(transform.position);
 
         foreach (SpriteRenderer sprite in spriteRenderers)
             sprite.sortingOrder = nowBlockSortNum;
 
-        DragDelegate.CallInvoke(false);
+        ShadowDelegate.CallInvoke(false);
 
         if (SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Remove(this);
@@ -118,20 +127,16 @@ public class Block : SerializedMonoBehaviour
         SortBlock.instance.SortOrderDuringDrag(this);
     }
 
-    private void OnMouseUp()
+    public void SetBlockToPos()
     {
         foreach (SpriteRenderer sprite in spriteRenderers)
             sprite.sortingOrder = baseSortNum;
 
         offset = Vector2.zero;
-        clickPos = Vector2.zero;
-
-        //print("전:" + transform.position);
+        // clickPos = Vector2.zero;
         transform.position = GameManager.ConvertCeilVec(transform.position);
-        //print("후:" + transform.position);
 
-        DragDelegate.CallInvoke(true);
-
+        ShadowDelegate.CallInvoke(true);
         nowBlock = null;
 
         GameManager.InvokeCheckVictoryDele();
@@ -139,14 +144,9 @@ public class Block : SerializedMonoBehaviour
         if (!SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Add(this);
         SortBlock.instance.SortBlocks();
-
-        // 블록이 blockStore의 윗부분보다 아래에 있을 경우 
-        // if (BlockStoreTileMap.tileStorePos.y > transform.TransformPoint(transform.position.x, transform.position.y, transform.position.z).y)
-        //     if(isSizeModified)
-        //         ControllSize(shrinkRate);
     }
 
-    private Vector2 clickPos;
+    // private Vector2 clickPos;
     private Vector2 Rotate(Vector2 p, Vector2 pivot, float angle)
     {
         Vector2 ret;
@@ -200,7 +200,7 @@ public class Block : SerializedMonoBehaviour
                     if (b.MAP[c, r])
                     {
                         Vector2 mainPos = b.transform.position;
-                        Vector2 temp = new Vector2(c, -r);
+                        Vector2 temp = new Vector2(c, -r) * curSize;
                         Set.Add(new Vector2(mainPos.x + temp.x, mainPos.y + temp.y));
                     }
         }
@@ -208,6 +208,8 @@ public class Block : SerializedMonoBehaviour
         foreach (Vector2 vec in list)
             if (Set.Contains(vec))
                 return true;
+            
+                
 
         return false;
     }
@@ -235,46 +237,38 @@ public class Block : SerializedMonoBehaviour
         return !((0 < inTheBlockCount && inTheBlockCount < GetBlockCount()) || OverLapBlock(list));
     }
 
-    private void OnMouseUpAsButton()
+    public void RotateBlock(Vector2 clickPos)
     {
-        Vector2 posFromCamera = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (Block.nowBlock != this) return;
 
-        if (Input.touchCount > 0)
-            posFromCamera = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-        //Touch touch = Input.GetTouch(0);
-
-        if (Vector2.Distance(clickPos, posFromCamera) <= 1f)
+        if (CanRotate(clickPos))
         {
-            if (CanRotate(clickPos))
-            {
-                print(GetBlockRealSize().Item1);
-                print(GetBlockRealSize().Item2);
+            Vector2 centerPos = new Vector2(GetBlockRealSize().Item1 - 1, GetBlockRealSize().Item2 - 1) * 0.5f;
+            // Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
 
-                Vector2 centerPos = new Vector2(GetBlockRealSize().Item1 - 1, GetBlockRealSize().Item2 - 1) * 0.5f;
-                // Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
+            bool[,] temp = new bool[Block_size, Block_size];
+            for (int c = 0; c < block_size; c++)
+                for (int r = 0; r < block_size; r++)
+                {
+                    temp[block_size - 1 - r, c] = MAP[c, r];
+                }
 
-                bool[,] temp = new bool[Block_size, Block_size];
-                for (int c = 0; c < block_size; c++)
-                    for (int r = 0; r < block_size; r++)
-                    {
-                        temp[block_size - 1 - r, c] = MAP[c, r];
-                    }
+            for (int c = 0; c < block_size; c++)
+                for (int r = 0; r < block_size; r++)
+                    MAP[c, r] = temp[c, r];
 
-                for (int c = 0; c < block_size; c++)
-                    for (int r = 0; r < block_size; r++)
-                        MAP[c, r] = temp[c, r];
+            UpdateBlockState();
 
-                UpdateBlockState();
+            clickPos = GameManager.ConvertCeilVec(clickPos);
+            Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
+            Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
+            Vector3 offsetTemp = newCenterPos - clickPos;
 
-                clickPos = GameManager.ConvertCeilVec(clickPos);
-                Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
-                Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
-                Vector3 offsetTemp = newCenterPos - clickPos;
+            transform.position -= offsetTemp;
 
-                transform.position -= offsetTemp;
+            GameManager.bv = GameManager.ConvertTileVec(transform.position);
 
-                GameManager.bv = GameManager.ConvertTileVec(transform.position);
-            }
+            ShadowDelegate.CallInvoke(false);
         }
     }
 
@@ -297,17 +291,17 @@ public class Block : SerializedMonoBehaviour
 
     public void ControllSize(float rate)
     {
-        curSize = rate;
-
         for (int r = 0; r < blocks.GetLength(1); r++)
             for (int c = 0; c < blocks.GetLength(0); c++)
             {
                 blocks[c, r].gameObject.transform.localScale = Vector3.one;
-                blocks[c, r].gameObject.transform.localPosition = new Vector3(c, -r, 0);
-
                 blocks[c, r].gameObject.transform.localScale *= rate;
+
+                blocks[c, r].gameObject.transform.localPosition = new Vector3(c, -r, 0);
                 blocks[c, r].gameObject.transform.localPosition *= rate;
             }
+
+        curSize = rate;
 
         if (rate > enlargeRate - shrinkRate)
             isSizeModified = true;
@@ -327,3 +321,98 @@ public class Block : SerializedMonoBehaviour
     public void SetCurSize(float s) => curSize = s;
 
 }
+
+// private void OnMouseDrag()
+// {
+//     Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+//     if (offset == Vector2.zero)
+//         offset = (Vector2)transform.position - v;
+//     if (clickPos == Vector2.zero)
+//         clickPos = v;
+
+//     transform.position = (v + offset);
+//     GameManager.bv = GameManager.ConvertTileVec(transform.position);
+
+//     nowBlock = this;
+
+//     if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY + transform.position.y * Block.shrinkRate <= transform.position.y * Block.enlargeRate)
+//         if (!isSizeModified)
+//             ControllSize(enlargeRate);
+
+//     if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY - transform.position.y * Block.enlargeRate > transform.position.y * Block.enlargeRate)
+//         if (isSizeModified)
+//             ControllSize(shrinkRate);
+
+//     foreach (SpriteRenderer sprite in spriteRenderers)
+//         sprite.sortingOrder = nowBlockSortNum;
+
+//     DragDelegate.CallInvoke(false);
+
+//     if (SortBlock.instance.sortRankBlock.Contains(this))
+//         SortBlock.instance.sortRankBlock.Remove(this);
+
+//     nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
+//     SortBlock.instance.SortOrderDuringDrag(this);
+// }
+
+// private void OnMouseUp()
+// {
+//     foreach (SpriteRenderer sprite in spriteRenderers)
+//         sprite.sortingOrder = baseSortNum;
+
+//     offset = Vector2.zero;
+//     clickPos = Vector2.zero;
+
+//     transform.position = GameManager.ConvertCeilVec(transform.position);
+
+//     DragDelegate.CallInvoke(true);
+//     nowBlock = null;
+
+//     GameManager.InvokeCheckVictoryDele();
+
+//     if (!SortBlock.instance.sortRankBlock.Contains(this))
+//         SortBlock.instance.sortRankBlock.Add(this);
+//     SortBlock.instance.SortBlocks();
+
+// }
+
+
+// private void OnMouseUpAsButton()
+// {
+//     Vector2 posFromCamera = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+//     if (Input.touchCount > 0)
+//         posFromCamera = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+//     //Touch touch = Input.GetTouch(0);
+
+//     if (Vector2.Distance(clickPos, posFromCamera) <= 1f)
+//     {
+//         if (CanRotate(clickPos))
+//         {
+//             Vector2 centerPos = new Vector2(GetBlockRealSize().Item1 - 1, GetBlockRealSize().Item2 - 1) * 0.5f;
+//             // Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
+
+//             bool[,] temp = new bool[Block_size, Block_size];
+//             for (int c = 0; c < block_size; c++)
+//                 for (int r = 0; r < block_size; r++)
+//                 {
+//                     temp[block_size - 1 - r, c] = MAP[c, r];
+//                 }
+
+//             for (int c = 0; c < block_size; c++)
+//                 for (int r = 0; r < block_size; r++)
+//                     MAP[c, r] = temp[c, r];
+
+//             UpdateBlockState();
+
+//             clickPos = GameManager.ConvertCeilVec(clickPos);
+//             Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
+//             Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
+//             Vector3 offsetTemp = newCenterPos - clickPos;
+
+//             transform.position -= offsetTemp;
+
+//             GameManager.bv = GameManager.ConvertTileVec(transform.position);
+//         }
+//     }
+// }

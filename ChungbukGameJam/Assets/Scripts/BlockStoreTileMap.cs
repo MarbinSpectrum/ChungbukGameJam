@@ -19,21 +19,7 @@ public class BlockStoreTileMap : MonoBehaviour
 
     private void Awake()
     {
-        // transform.position = Vector3.zero;
-        // tileStore.transform.position = Vector3.zero;
          tileStorePos = transform.position;
-
-        // Vector2 basePos = Vector2.zero;
-        // basePos.x = -Block.shrinkRate * (cellX) * 0.5f;
-        // basePos.y = -Block.shrinkRate * (cellY) * 1.25f;
-
-        // transform.position += (Vector3)basePos;
-        // tileStore.transform.position += (Vector3)basePos;
-        // tileStorePos += basePos;
-        // tileStorePos = ((Vector2)tileStore.transform.position) * Block.enlargeRate;
-        // tileStorePos.x -= (cellX - 1) * Block.enlargeRate;
-        // tileStore.transform.position = tileStorePos;
-
     }
 
     private void Start()
@@ -43,7 +29,7 @@ public class BlockStoreTileMap : MonoBehaviour
         stageManager = FindObjectOfType<StageManager>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        boundSizeY = (cellX * Block.shrinkRate); // transform.position.y;
+        boundSizeY = (cellY * Block.shrinkRate) * 0.5f; // transform.position.y;
 
         for (int i = 0; i < cellX; i++)
         {

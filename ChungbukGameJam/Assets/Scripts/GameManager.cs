@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-internal static class DragDelegate
+internal static class ShadowDelegate
 {
     public delegate void Dele(bool b);
     public static event Dele BlockCheck;
@@ -44,9 +44,9 @@ public class GameManager : MonoBehaviour
         Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
 
         map_size = createMap.map_size;
-        createMap.CreateMAP();        
+        createMap.CreateMAP();
 
-        DragDelegate.SubscribeBlockCheck(SettingCheck);
+        ShadowDelegate.SubscribeBlockCheck(SettingCheck);
         CheckVictoryDele += CheckVictory;
     }
 
@@ -57,39 +57,20 @@ public class GameManager : MonoBehaviour
         float tempX = (v.x / Block.nowBlock.curSize);
         float tempY = (v.y / Block.nowBlock.curSize);
 
-        // if(Mathf.Abs(tempX - ) > Block.nowBlock.curSize * 0.5f)
-
         float compareX = (int)tempX * Block.nowBlock.curSize;
         float compareY = (int)tempY * Block.nowBlock.curSize;
 
-        v.x = compareX;
-        v.y = compareY;
-
-        if (Mathf.Abs(v.x - compareX) > Block.nowBlock.curSize * 0.5f)
-            if (v.x > 0)
-                v.x = compareX + Block.nowBlock.curSize;
-            else
-                v.x = compareX - Block.nowBlock.curSize;
-
-        // v.x = (int)tempX * Block.nowBlock.curSize;
         if (CreateMap.instance.map_size.x % 2 == 0)
             if (v.x > 0)
-                v.x += 0.5f * Block.nowBlock.curSize;
+                v.x = compareX + 0.5f * Block.nowBlock.curSize;
             else
-                v.x -= 0.5f * Block.nowBlock.curSize;
+                v.x = compareX - 0.5f * Block.nowBlock.curSize;
 
-        if (Mathf.Abs(v.y - compareY) > Block.nowBlock.curSize * 0.5f)
-            if (v.y > 0)
-                v.y = compareY + Block.nowBlock.curSize;
-            else
-                v.y = compareY - Block.nowBlock.curSize;
-
-        // v.y = (int)tempY * Block.nowBlock.curSize;
         if (CreateMap.instance.map_size.y % 2 == 0)
             if (v.y > 0)
-                v.y += 0.5f * Block.nowBlock.curSize;
+                v.y = compareY + 0.5f * Block.nowBlock.curSize;
             else
-                v.y -= 0.5f * Block.nowBlock.curSize;
+                v.y = compareY - 0.5f * Block.nowBlock.curSize;
 
         return v;
     }
@@ -102,12 +83,11 @@ public class GameManager : MonoBehaviour
 
         v.x += (Block.nowBlock.curSize * (map_size.x - 1)) * 0.5f - CreateMap.instance.transform.position.x;
         v.x += Block.nowBlock.curSize * 0.5f;
-        // v.x = Mathf.FloorToInt(v.x);
 
         v.y = -v.y;
         v.y += (Block.nowBlock.curSize * (map_size.y - 1)) * 0.5f + CreateMap.instance.transform.position.y;
         v.y += Block.nowBlock.curSize * 0.5f;
-        // v.y = Mathf.FloorToInt(v.y);
+
         return v;
     }
 
@@ -121,7 +101,10 @@ public class GameManager : MonoBehaviour
         for (int c = 0; c < instance.createMap.map_size.x; c++)
             for (int r = 0; r < instance.createMap.map_size.y; r++)
                 if (instance.createMap.MAP[c, r])
+                {
                     Set.Add(instance.createMap.transform.position + Tile[c, r].transform.localPosition);
+                }
+
 
         if (list == null)
             list = block.GetBlocksArray();

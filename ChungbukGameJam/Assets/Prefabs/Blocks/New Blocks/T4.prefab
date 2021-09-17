@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6717506325987446190}
   m_Layer: 0
   m_Name: Tile
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -262,6 +262,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  curSize: 0
 --- !u!50 &6717506326236445032
 Rigidbody2D:
   serializedVersion: 4
@@ -311,7 +312,7 @@ CompositeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
+  m_GeometryType: 1
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths: []

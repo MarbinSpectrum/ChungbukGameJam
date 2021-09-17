@@ -153,6 +153,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  curSize: 0
 --- !u!50 &369047876092960782
 Rigidbody2D:
   serializedVersion: 4
@@ -223,7 +224,7 @@ GameObject:
   - component: {fileID: 369047876108211400}
   m_Layer: 0
   m_Name: Tile
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -283,7 +284,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 123d19c098844374d874f3dbd1f20162, type: 3}
-  m_Color: {r: 0.8191585, g: 0.087086126, b: 0.9716981, a: 1}
+  m_Color: {r: 0.7179954, g: 0.9339623, b: 0.5242524, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

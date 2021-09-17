@@ -4,21 +4,49 @@ using UnityEngine;
 
 public class TouchChecker : MonoBehaviour
 {
-    public static Vector2 touchPos;
+    public bool isDragging;
 
-    // Update is called once per frame
-    // void Update()
-    // {
-    //     if(Input.GetTouch(0).phase == TouchPhase.Began)
-    //     {
-    //         Touch touch = Input.GetTouch(0);
+    Ray2D ray;
+    RaycastHit2D hit;
 
-    //         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touch.position), Vector2.zero);
+    void Update()
+    {
+        if (Input.touchCount < 1) return;
 
-    //         if(hit.collider.tag == "Block")
-    //         {
-    //             hit.collider.GetComponent<Block>().Rotate();
-    //         }
-    //     }
-    // }
+        Touch touch = Input.GetTouch(0);
+        // Vector2 touchPos = Camera.main.ScreenToWorldPoint(touch.position);
+
+        // ray = new Ray2D(touchPos, Vector2.up); //Vector2.zero    
+        hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touch.position), Vector2.zero, Mathf.Infinity);
+
+        if (touch.phase == TouchPhase.Began)
+        {
+            print(hit.collider.gameObject.name);
+            
+            if (hit.rigidbody && hit.rigidbody.tag == "Block")
+            {
+                print("제대로 발견");
+                Block.nowBlock = hit.rigidbody.gameObject.GetComponent<Block>();
+            }
+        }
+        else if (touch.phase == TouchPhase.Moved)
+        {
+            if (Block.nowBlock == null) return;
+
+            Block.nowBlock.DragBlock(hit.point);
+            isDragging = true;
+        }
+        else if (touch.phase == TouchPhase.Ended)
+        {
+            if (Block.nowBlock == null) return;
+
+            if (!isDragging)
+                Block.nowBlock.RotateBlock(hit.point);
+
+            Block.nowBlock.SetBlockToPos();
+            isDragging = false;
+        }
+
+
+    }
 }

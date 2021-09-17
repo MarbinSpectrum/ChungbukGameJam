@@ -138,6 +138,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  curSize: 0
 --- !u!50 &584802128036442138
 Rigidbody2D:
   serializedVersion: 4
@@ -208,7 +209,7 @@ GameObject:
   - component: {fileID: 584802128257205468}
   m_Layer: 0
   m_Name: Tile
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
