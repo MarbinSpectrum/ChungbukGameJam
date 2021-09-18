@@ -88,29 +88,18 @@ public class Block : SerializedMonoBehaviour
                 blocks[c, r].SetActive(MAP[c, r]);
     }
 
+    public void TouchBlock()
+    {
+        ControllSize(enlargeRate);
+    }
+
     public void DragBlock(Vector2 v)
     {
         // nowBlock = this;
 
-        if (sizeControllY < transform.position.y * enlargeRate)
-        {
-            if (!isSizeModified)
-                ControllSize(enlargeRate);
-        }
-        else
-        {
-            if (isSizeModified)
-                ControllSize(shrinkRate);
-        }
-
         if (offset == Vector2.zero)
             offset = (Vector2)transform.position - v;
 
-        print("블록 현 위치: " + transform.position);
-        print("offset의 값은: " + offset);
-        print("거리: " + Vector2.Distance(v, transform.position));
-
-        // transform.position = v + offset;
         transform.position = v + offset;
 
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
@@ -135,6 +124,11 @@ public class Block : SerializedMonoBehaviour
         offset = Vector2.zero;
         // clickPos = Vector2.zero;
         transform.position = GameManager.ConvertCeilVec(transform.position);
+
+        if (sizeControllY < transform.position.y * enlargeRate)
+            ControllSize(enlargeRate);
+        else
+            ControllSize(shrinkRate);
 
         ShadowDelegate.CallInvoke(true);
         nowBlock = null;
@@ -208,9 +202,7 @@ public class Block : SerializedMonoBehaviour
         foreach (Vector2 vec in list)
             if (Set.Contains(vec))
                 return true;
-            
-                
-
+    
         return false;
     }
     private bool CanRotate(Vector2 clickPos)
@@ -316,103 +308,5 @@ public class Block : SerializedMonoBehaviour
         transform.position = basePos;
     } 
 
-    public void SetBasePos(Vector2 vec) => basePos = vec;
-
-    public void SetCurSize(float s) => curSize = s;
-
+    public void SetBasePos(Vector2 vec) => basePos = vec; 
 }
-
-// private void OnMouseDrag()
-// {
-//     Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-//     if (offset == Vector2.zero)
-//         offset = (Vector2)transform.position - v;
-//     if (clickPos == Vector2.zero)
-//         clickPos = v;
-
-//     transform.position = (v + offset);
-//     GameManager.bv = GameManager.ConvertTileVec(transform.position);
-
-//     nowBlock = this;
-
-//     if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY + transform.position.y * Block.shrinkRate <= transform.position.y * Block.enlargeRate)
-//         if (!isSizeModified)
-//             ControllSize(enlargeRate);
-
-//     if (BlockStoreTileMap.tileStorePos.y + BlockStoreTileMap.boundSizeY - transform.position.y * Block.enlargeRate > transform.position.y * Block.enlargeRate)
-//         if (isSizeModified)
-//             ControllSize(shrinkRate);
-
-//     foreach (SpriteRenderer sprite in spriteRenderers)
-//         sprite.sortingOrder = nowBlockSortNum;
-
-//     DragDelegate.CallInvoke(false);
-
-//     if (SortBlock.instance.sortRankBlock.Contains(this))
-//         SortBlock.instance.sortRankBlock.Remove(this);
-
-//     nowBlock.GetComponent<SpriteRenderer>().sortingOrder = nowBlockSortNum;
-//     SortBlock.instance.SortOrderDuringDrag(this);
-// }
-
-// private void OnMouseUp()
-// {
-//     foreach (SpriteRenderer sprite in spriteRenderers)
-//         sprite.sortingOrder = baseSortNum;
-
-//     offset = Vector2.zero;
-//     clickPos = Vector2.zero;
-
-//     transform.position = GameManager.ConvertCeilVec(transform.position);
-
-//     DragDelegate.CallInvoke(true);
-//     nowBlock = null;
-
-//     GameManager.InvokeCheckVictoryDele();
-
-//     if (!SortBlock.instance.sortRankBlock.Contains(this))
-//         SortBlock.instance.sortRankBlock.Add(this);
-//     SortBlock.instance.SortBlocks();
-
-// }
-
-
-// private void OnMouseUpAsButton()
-// {
-//     Vector2 posFromCamera = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-//     if (Input.touchCount > 0)
-//         posFromCamera = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-//     //Touch touch = Input.GetTouch(0);
-
-//     if (Vector2.Distance(clickPos, posFromCamera) <= 1f)
-//     {
-//         if (CanRotate(clickPos))
-//         {
-//             Vector2 centerPos = new Vector2(GetBlockRealSize().Item1 - 1, GetBlockRealSize().Item2 - 1) * 0.5f;
-//             // Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
-
-//             bool[,] temp = new bool[Block_size, Block_size];
-//             for (int c = 0; c < block_size; c++)
-//                 for (int r = 0; r < block_size; r++)
-//                 {
-//                     temp[block_size - 1 - r, c] = MAP[c, r];
-//                 }
-
-//             for (int c = 0; c < block_size; c++)
-//                 for (int r = 0; r < block_size; r++)
-//                     MAP[c, r] = temp[c, r];
-
-//             UpdateBlockState();
-
-//             clickPos = GameManager.ConvertCeilVec(clickPos);
-//             Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
-//             Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
-//             Vector3 offsetTemp = newCenterPos - clickPos;
-
-//             transform.position -= offsetTemp;
-
-//             GameManager.bv = GameManager.ConvertTileVec(transform.position);
-//         }
-//     }
-// }

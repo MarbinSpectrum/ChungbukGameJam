@@ -139,6 +139,7 @@ MonoBehaviour:
       Entry: 8
       Data: 
   curSize: 0
+  sizeControllY: 0
 --- !u!50 &2225062946054290835
 Rigidbody2D:
   serializedVersion: 4

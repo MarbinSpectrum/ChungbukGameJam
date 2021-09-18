@@ -196,9 +196,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01648fd1ac1d851498d60ce8a62e8afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageIdx: 0
-  stageData: {fileID: 11400000, guid: 4a55149b2effbcf4f8e34f77393d7e38, type: 2}
+  stageData: {fileID: 11400000, guid: 64d1702de9df06747a2b54047c71f705, type: 2}
   blockStore: {fileID: 1679798384}
+  blockStoreTileMap: {fileID: 1679798385}
 --- !u!114 &5670801
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -25,8 +25,8 @@ public class TouchChecker : MonoBehaviour
             
             if (hit.rigidbody && hit.rigidbody.tag == "Block")
             {
-                print("제대로 발견");
                 Block.nowBlock = hit.rigidbody.gameObject.GetComponent<Block>();
+                Block.nowBlock.TouchBlock();
             }
         }
         else if (touch.phase == TouchPhase.Moved)

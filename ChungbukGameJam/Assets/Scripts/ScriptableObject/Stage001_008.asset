@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 428c62290e6d9294cb881249e9543f03, type: 3}
-  m_Name: Stage001_002
+  m_Name: Stage001_008
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,10 +26,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2Int, UnityEngine.CoreModule
     - Name: 
       Entry: 3
-      Data: 3
+      Data: 4
     - Name: 
       Entry: 3
-      Data: 3
+      Data: 4
     - Name: 
       Entry: 8
       Data: 
@@ -38,10 +38,31 @@ MonoBehaviour:
       Data: 0|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
-      Data: 9
+      Data: 16
     - Name: ranks
       Entry: 1
-      Data: 3|3
+      Data: 4|4
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 5
       Data: true
@@ -75,12 +96,16 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  stageID: 2
-  stageName: "\uB450\uBC88\uC9F8"
+  stageID: 3
+  stageName: 
   blocks:
   - block: {fileID: 4034733983945147071, guid: 31b6410c25f07894e9a74929e6d47c6e, type: 3}
+    num: 1
+  - block: {fileID: 584802127770827655, guid: a6a0e359def82a449886570e6897bc9e, type: 3}
     num: 1
   - block: {fileID: 2225062945784477198, guid: b5d7174ae516ff94394717d06056df35, type: 3}
     num: 1
   - block: {fileID: 8276629151192350463, guid: ddd62c20c82c6f640b4834f2e1f1bca1, type: 3}
+    num: 1
+  - block: {fileID: 8436108658437999541, guid: 6eeab748bbea55943b534abfcd849843, type: 3}
     num: 1

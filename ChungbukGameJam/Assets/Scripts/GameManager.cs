@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private CreateMap createMap;
     private StageManager stageManager;
+    private BlockStoreTileMap storeTileMap;
 
     public static Tile[,] Tile;
     public static Vector2 bv = new Vector2(-10, -10);
@@ -35,15 +36,16 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         createMap = FindObjectOfType<CreateMap>();
+        storeTileMap = FindObjectOfType<BlockStoreTileMap>();
         stageManager = FindObjectOfType<StageManager>();
-
-        stageManager.InstantiateBlocks();
-        // stageManager.SetTileMapToCreateMap();
+        
+        // storeTileMap.CreateOutline();
+        // storeTileMap.AllocatePosToBlock();
 
         createMap.map_size = stageManager.stageData.map_size;
-        Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
-
         map_size = createMap.map_size;
+
+        Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
         createMap.CreateMAP();
 
         ShadowDelegate.SubscribeBlockCheck(SettingCheck);
