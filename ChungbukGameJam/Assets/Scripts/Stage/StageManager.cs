@@ -38,7 +38,7 @@ public class StageManager : MonoBehaviour
             {
                 Block block = Instantiate(stageData.blocks[b].block);
                 block.transform.position = Vector3.zero;
-                block.transform.SetParent(this.transform);
+                block.transform.SetParent(blockStore.transform);
 
                 // 다음 블록이 수용 공간에서 벗어날 경우, 위로 블록을 보냄.
                 // 양옆의 테두리 칸(1)을 빼기 위해서 cellX -2를 해줌
@@ -58,7 +58,7 @@ public class StageManager : MonoBehaviour
                 pointY += block.GetBlockRealSize().Item2 - 1;
 
                 block.transform.position = tempPos + new Vector2(pointX, pointY) * Block.shrinkRate;
-                block.SetBasePos(tempPos);
+                block.SetBasePos(block.transform.position);
                 landedBlocks[idxX, idxY] = block;
 
                 pointX += block.GetBlockRealSize().Item1 + 1;

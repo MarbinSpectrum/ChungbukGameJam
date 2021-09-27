@@ -8,8 +8,6 @@ public class PlayerDataFromJson : MonoBehaviour
     public static PlayerDataFromJson instance;
     PlayerJson json;
 
-    private void Awake() => instance = this;
-
     public PlayerJson Json
     {
         get { return json; }
@@ -19,11 +17,11 @@ public class PlayerDataFromJson : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
+        instance = this;
         json = null;
-        GetDataFromJson();
-        SetData();
+        // SetData();
     }
 
     public void GetDataFromJson()
@@ -34,10 +32,10 @@ public class PlayerDataFromJson : MonoBehaviour
 
         // if (json != null)
         // {
+        //     print(json);
         //     print(JsonUtility.ToJson(json,true));
         //     print(json.HaveCats.Count);
         // }
-
     }
 
     public void SetData()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-internal static class ShadowDelegate
+internal static class SettingCheckDelegate
 {
     public delegate void Dele(bool b);
     public static event Dele BlockCheck;
@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private CreateMap createMap;
     private StageManager stageManager;
-    private BlockStoreTileMap storeTileMap;
+    private TouchChecker touchChecker;
 
     public static Tile[,] Tile;
     public static Vector2 bv = new Vector2(-10, -10);
@@ -36,9 +36,9 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         createMap = FindObjectOfType<CreateMap>();
-        storeTileMap = FindObjectOfType<BlockStoreTileMap>();
         stageManager = FindObjectOfType<StageManager>();
-        
+        touchChecker = FindObjectOfType<TouchChecker>();
+
         // storeTileMap.CreateOutline();
         // storeTileMap.AllocatePosToBlock();
 
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
         Tile = new Tile[createMap.map_size.x, createMap.map_size.y];
         createMap.CreateMAP();
 
-        ShadowDelegate.SubscribeBlockCheck(SettingCheck);
+        SettingCheckDelegate.SubscribeBlockCheck(SettingCheck);
         CheckVictoryDele += CheckVictory;
     }
 
@@ -62,33 +62,96 @@ public class GameManager : MonoBehaviour
         float compareX = (int)tempX * Block.nowBlock.curSize;
         float compareY = (int)tempY * Block.nowBlock.curSize;
 
+
+
         if (CreateMap.instance.map_size.x % 2 == 0)
+        {
             if (v.x > 0)
                 v.x = compareX + 0.5f * Block.nowBlock.curSize;
             else
                 v.x = compareX - 0.5f * Block.nowBlock.curSize;
+        }
+        else
+        {
+            if (v.x > 0)
+            {
+                // print("v.x > 0 & " + (v.x - compareX).ToString("F4"));
+                if (v.x - compareX > Block.nowBlock.curSize * 0.5f) // 절반 이상 넘어감
+                    v.x = compareX + Block.nowBlock.curSize;// Block.nowBlock.curSize;
+                else
+                    v.x = compareX;
+            }
+            else
+            {
+                // print("v.x <= 0 & " + (v.x - compareX));
+                if (v.x - compareX < -Block.nowBlock.curSize * 0.5f) // 절반 이상이 뒤쪽에 있음.
+                    v.x = compareX - Block.nowBlock.curSize;
+                else
+                    v.x = compareX;
+            }
+        }
+
 
         if (CreateMap.instance.map_size.y % 2 == 0)
+        {
             if (v.y > 0)
                 v.y = compareY + 0.5f * Block.nowBlock.curSize;
             else
                 v.y = compareY - 0.5f * Block.nowBlock.curSize;
+        }
+        else
+        {
+            if (v.y > 0)
+            {
+                // print("v.y > 0 & " + +(v.y - compareY));
+                if (v.y - compareY > Block.nowBlock.curSize * 0.5f) // 절반 이상 넘어감
+                    v.y = compareY + Block.nowBlock.curSize; // + Block.nowBlock.curSize;
+                else
+                    v.y = compareY;
+            }
+            else
+            {
+                // print("v.y <= 0 & " + (v.y - compareY));
+                if (v.y - compareY < -Block.nowBlock.curSize * 0.5f) // 절반 이상이 뒤쪽에 있음.
+                    v.y = compareY - Block.nowBlock.curSize;
+                else
+                    v.y = compareY;
+            }
+        }
 
         return v;
-    }
 
+    }
 
 
     public static Vector2 ConvertTileVec(Vector2 v)
     {
+        // if (!Block.nowBlock) return v;
+
+        // v.x += (Block.nowBlock.curSize * (map_size.x - 1)) * 0.5f - CreateMap.instance.transform.position.x;
+        // v.x += Block.nowBlock.curSize * 0.5f;
+
+        // v.y = -v.y;
+        // v.y += (Block.nowBlock.curSize * (map_size.y - 1)) * 0.5f + CreateMap.instance.transform.position.y;
+        // v.y += Block.nowBlock.curSize * 0.5f;
+
+        // return v;
+
         if (!Block.nowBlock) return v;
 
         v.x += (Block.nowBlock.curSize * (map_size.x - 1)) * 0.5f - CreateMap.instance.transform.position.x;
-        v.x += Block.nowBlock.curSize * 0.5f;
+
+        if (v.x > 0)
+            v.x += Block.nowBlock.curSize * 0.5f;
+        else
+            v.x -= Block.nowBlock.curSize * 0.5f;
 
         v.y = -v.y;
         v.y += (Block.nowBlock.curSize * (map_size.y - 1)) * 0.5f + CreateMap.instance.transform.position.y;
-        v.y += Block.nowBlock.curSize * 0.5f;
+        if (v.y > 0)
+            v.y += Block.nowBlock.curSize * 0.5f;
+        else
+            v.y -= Block.nowBlock.curSize * 0.5f;
 
         return v;
     }
@@ -98,29 +161,40 @@ public class GameManager : MonoBehaviour
     {
         int res = 0;
 
-        HashSet<Vector2> Set = new HashSet<Vector2>();
+        List<Vector2> Set = new List<Vector2>();
 
-        for (int c = 0; c < instance.createMap.map_size.x; c++)
-            for (int r = 0; r < instance.createMap.map_size.y; r++)
+        for (int r = 0; r < instance.createMap.map_size.y; r++)
+            for (int c = 0; c < instance.createMap.map_size.x; c++)
                 if (instance.createMap.MAP[c, r])
-                {
                     Set.Add(instance.createMap.transform.position + Tile[c, r].transform.localPosition);
-                }
 
 
         if (list == null)
             list = block.GetBlocksArray();
 
-        foreach (Vector2 vec in list)
-            if (Set.Contains(vec))
-                res++;
+        for (int i = 0; i < Set.Count; i++)
+            foreach (Vector2 vec in list)
+                if (Set[i] == vec)
+                    res++;
 
+        //print("InTheBlockCount() tilePos in Set: " + Set[i].ToString("F4"));
+
+        // foreach (Vector2 vec in list)
+        //     if (Set.Contains(vec))
+        //     {
+        //         res++;
+        //         print("InTheBlockCount() vec in list: " + vec.ToString("F3"));
+        //     }
+        //     else
+        //     {
+        //         print("InTheBlockCount() vec without list" + vec.ToString("F3"));
+        //     }
         return res;
     }
 
     private void CheckTile()
     {
-        HashSet<Vector2> Set = new HashSet<Vector2>();
+        List<Vector2> Set = new List<Vector2>();
         foreach (Block b in blockData)
             for (int c = 0; c < b.block_size; c++)
                 for (int r = 0; r < b.block_size; r++)
@@ -135,8 +209,9 @@ public class GameManager : MonoBehaviour
             for (int r = 0; r < createMap.map_size.y; r++)
                 if (createMap.MAP[c, r])
                     Tile[c, r].SetIsFill(Set.Contains(createMap.transform.position + Tile[c, r].transform.localPosition));
+                
+                    
     }
-
 
     // 타일 내 색깔 변경은 optional featrue로 판정.
     // 기획팀과 상의한 뒤, 이 기능이 필요한 지 물어보도록 하자.
@@ -176,6 +251,8 @@ public class GameManager : MonoBehaviour
                 int inTheBlockCount = InTheBlockCount(Block.nowBlock);
                 if ((0 < inTheBlockCount && inTheBlockCount < Block.nowBlock.GetBlockCount()) || Block.nowBlock.OverLapBlock())
                 {
+                    print("inTheBlockCount" + inTheBlockCount); 
+                    TouchChecker.isDragging = true;
                     Block.nowBlock.ReturnToBasePos();
                     Array.Clear(tileState, 0, tileState.Length);
                     ChangeTileColorInMaps(tileState);
@@ -185,7 +262,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
 
     void ChangeTileColorInMaps(bool[,] tileConditions)
     {
