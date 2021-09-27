@@ -22,6 +22,8 @@ public class Block : SerializedMonoBehaviour
     CompositeCollider2D compositeCollider2D;
 
     bool isSizeModified = false;
+    [SerializeField]
+    bool isDragging = false;
 
     [Title("크기")]
     [GUIColor(0, 1, 0)]
@@ -40,7 +42,7 @@ public class Block : SerializedMonoBehaviour
 
     [Title("모양")]
     public bool[,] MAP;
-    
+
 
     /////////////////////////////////////////////////////////////////
 
@@ -100,6 +102,11 @@ public class Block : SerializedMonoBehaviour
         if (offset == Vector2.zero)
             offset = (Vector2)transform.position - v;
 
+        // if(sizeControllY < Block.nowBlock.transform.position.y)
+        //     ControllSize(enlargeRate);
+        // else
+        //     ControllSize(shrinkRate);
+
         transform.position = v + offset;
 
         GameManager.bv = GameManager.ConvertTileVec(transform.position);
@@ -107,7 +114,7 @@ public class Block : SerializedMonoBehaviour
         foreach (SpriteRenderer sprite in spriteRenderers)
             sprite.sortingOrder = nowBlockSortNum;
 
-        ShadowDelegate.CallInvoke(false);
+        SettingCheckDelegate.CallInvoke(false);
 
         if (SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Remove(this);
@@ -123,17 +130,17 @@ public class Block : SerializedMonoBehaviour
 
         offset = Vector2.zero;
         // clickPos = Vector2.zero;
-        transform.position = GameManager.ConvertCeilVec(transform.position);
 
         if (sizeControllY < transform.position.y * enlargeRate)
             ControllSize(enlargeRate);
         else
             ControllSize(shrinkRate);
 
-        ShadowDelegate.CallInvoke(true);
-        nowBlock = null;
+        transform.position = GameManager.ConvertCeilVec(transform.position);
 
+        SettingCheckDelegate.CallInvoke(true);
         GameManager.InvokeCheckVictoryDele();
+        // nowblock == null;
 
         if (!SortBlock.instance.sortRankBlock.Contains(this))
             SortBlock.instance.sortRankBlock.Add(this);
@@ -145,8 +152,8 @@ public class Block : SerializedMonoBehaviour
     {
         Vector2 ret;
         angle = angle * Mathf.Deg2Rad;
-        ret.x = (p.x - pivot.x)  * Mathf.Cos(angle) - (p.y - pivot.y) * Mathf.Sin(angle) + pivot.x;
-        ret.y = (p.x - pivot.x)  * Mathf.Sin(angle) + (p.y - pivot.y) * Mathf.Cos(angle) + pivot.y;
+        ret.x = (p.x - pivot.x) * Mathf.Cos(angle) - (p.y - pivot.y) * Mathf.Sin(angle) + pivot.x;
+        ret.y = (p.x - pivot.x) * Mathf.Sin(angle) + (p.y - pivot.y) * Mathf.Cos(angle) + pivot.y;
 
         return ret;
     }
@@ -202,7 +209,7 @@ public class Block : SerializedMonoBehaviour
         foreach (Vector2 vec in list)
             if (Set.Contains(vec))
                 return true;
-    
+
         return false;
     }
     private bool CanRotate(Vector2 clickPos)
@@ -222,11 +229,14 @@ public class Block : SerializedMonoBehaviour
                 {
                     Vector2 temp = blocks[block_size - 1 - r, c].transform.localPosition;
                     Vector2 newVec = new Vector2(mainPos.x + temp.x, mainPos.y + temp.y);
-                    list.Add(newVec);
+                    //list.Add(newVec);
+                    list.Add(mainPos + temp);
                 }
 
         int inTheBlockCount = GameManager.InTheBlockCount(this, list);
         return !((0 < inTheBlockCount && inTheBlockCount < GetBlockCount()) || OverLapBlock(list));
+        // intheBlockCount가 0이하거나 실제 블록 수 이상 + 오버랩이 안되어야 함.
+        // => inthe blockcount가 1~2개가 뜨면 안됨.
     }
 
     public void RotateBlock(Vector2 clickPos)
@@ -235,7 +245,6 @@ public class Block : SerializedMonoBehaviour
 
         if (CanRotate(clickPos))
         {
-            Vector2 centerPos = new Vector2(GetBlockRealSize().Item1 - 1, GetBlockRealSize().Item2 - 1) * 0.5f;
             // Vector2 centerPos = Vector2.one * (block_size - 1) / 2;
 
             bool[,] temp = new bool[Block_size, Block_size];
@@ -251,16 +260,16 @@ public class Block : SerializedMonoBehaviour
 
             UpdateBlockState();
 
+            // 마우스 커서가 올려진 곳을 기준으로 회전하기 위한 로직
             clickPos = GameManager.ConvertCeilVec(clickPos);
             Vector2 pivot = (Vector2)transform.position + new Vector2((block_size - 1), -(block_size - 1)) * curSize * 0.5f;
             Vector2 newCenterPos = Rotate(clickPos, pivot, -90);
             Vector3 offsetTemp = newCenterPos - clickPos;
 
             transform.position -= offsetTemp;
-
             GameManager.bv = GameManager.ConvertTileVec(transform.position);
 
-            ShadowDelegate.CallInvoke(false);
+            SettingCheckDelegate.CallInvoke(false);
         }
     }
 
@@ -306,7 +315,14 @@ public class Block : SerializedMonoBehaviour
     {
         ControllSize(shrinkRate);
         transform.position = basePos;
-    } 
+    }
 
-    public void SetBasePos(Vector2 vec) => basePos = vec; 
+    public void SetBasePos(Vector2 vec) => basePos = vec;
+
+    private void OnMouseDrag()
+    {
+        DragBlock(TouchChecker.hit.point);
+        // TouchChecker.isDragging = true;
+        // print("OnMouseDrag");
+    }
 }

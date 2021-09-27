@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Board
+public class Board: Item
 {
-    // Start is called before the first frame update
-    void Start()
+    public Board(string name, int idx, Sprite portrait) : base(name, idx, portrait)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        itemName = name;
+        itemIdx = idx;
+        itemPortrait = portrait;
     }
 }

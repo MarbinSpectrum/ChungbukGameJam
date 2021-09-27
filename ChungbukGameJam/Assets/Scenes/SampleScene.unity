@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01648fd1ac1d851498d60ce8a62e8afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageData: {fileID: 11400000, guid: 64d1702de9df06747a2b54047c71f705, type: 2}
+  stageData: {fileID: 11400000, guid: 52f526c983947d649841020a3cc34f40, type: 2}
   blockStore: {fileID: 1679798384}
   blockStoreTileMap: {fileID: 1679798385}
 --- !u!114 &5670801
@@ -225,6 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDragging: 0
+  mousePositionForBlock: {x: 0, y: 0}
 --- !u!1 &115433505
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,6 +1710,7 @@ GameObject:
   - component: {fileID: 1339971165}
   - component: {fileID: 1339971167}
   - component: {fileID: 1339971166}
+  - component: {fileID: 1339971164}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1716,6 +1718,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1339971164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339971163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38caedb490d66554797fdaaf7976538e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1339971165
 Transform:
   m_ObjectHideFlags: 0
@@ -1755,6 +1769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerData: {fileID: 0}
+  inventory: {fileID: 0}
   cats: []
 --- !u!1 &1370813392
 GameObject:

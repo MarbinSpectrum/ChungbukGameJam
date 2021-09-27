@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class CatData : ICollectable
+public class CatData : Item, ICollectable
 {
-    // Start is called before the first frame update
-    public int CatID;
-    public string CatName;
+    public List<FoodData> favoriteFoods = new List<FoodData>();
 
-    public List<Food> favoriteFoods = new List<Food>();
-
-    public CatData(int id, string name, List<Food> favor)
+    public CatData(string name, int idx, Sprite portrait, List<FoodData> favoriteFoods): base(name, idx, portrait)
     {
-        CatID = id;
-        CatName = name;
-        favoriteFoods = favor;
+        itemName = name;
+        itemIdx = idx;
+        itemPortrait = portrait;
+
+        this.favoriteFoods = favoriteFoods;
     }
 
     public void AddThisToPlayerData(PlayerDataFromJson playerDataFromJson)
@@ -26,5 +24,15 @@ public class CatData : ICollectable
     public void RemoveThisFromPlayerData(PlayerDataFromJson playerDataFromJson)
     {
 
+    }
+
+    public void SetFavorFoods(List<FoodData> favor)
+    {
+        favoriteFoods = favor;
+    }
+
+    public List<FoodData> GetFavorFoods()
+    {
+        return favoriteFoods;
     }
 }
