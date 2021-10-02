@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     public static Player instance;
     public PlayerDataFromJson playerData;
-    public Inventory inventory;
+    public InventoryData inventory;
 
     public List<CatData> cats = new List<CatData>();
 
@@ -21,12 +21,11 @@ public class Player : MonoBehaviour
     private void Start()
     {
         playerData = GetComponent<PlayerDataFromJson>();
-        inventory = GetComponent<Inventory>();
+        inventory = GetComponent<InventoryData>();
 
         cats.Clear();
-        inventory.GetItems();
-        //SetCatsFromJson();
-        // inventory.GetItems();        
+        playerData.GetItems();
+        //inventory.GetItems();      
     } 
 
     void SetCatsFromJson()

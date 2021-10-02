@@ -28,7 +28,7 @@ public class PlayerDataFromJson : MonoBehaviour
     {
         var obj = Resources.Load("PlayerInfo/PlayerData");
 
-        json = JsonUtility.FromJson<PlayerJson>(obj.ToString());
+        Json = JsonUtility.FromJson<PlayerJson>(obj.ToString());
 
         // if (json != null)
         // {
@@ -50,6 +50,17 @@ public class PlayerDataFromJson : MonoBehaviour
         // print(Application.dataPath);
         // string path = Path.Combine(Application.dataPath, "Resources/PlayerInfo/PlayerData.json");
         // File.WriteAllText(path, pJson);
+    }
+
+    public PlayerJson GetItems()
+    {
+        GetDataFromJson();
+        List<CatData> catDatas = Json.HaveCats;
+
+        for (int i = 0; i < Json.HaveCats.Count; i++)
+            print(catDatas[i].itemName);
+
+        return Json;
     }
 
     public void SaveDataToJson()
