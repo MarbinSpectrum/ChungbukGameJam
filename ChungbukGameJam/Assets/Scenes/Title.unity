@@ -11007,7 +11007,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1606279662
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13467,6 +13467,7 @@ GameObject:
   - component: {fileID: 1915534025}
   - component: {fileID: 1915534024}
   - component: {fileID: 1915534023}
+  - component: {fileID: 1915534022}
   m_Layer: 5
   m_Name: Inventory Canvas (1)
   m_TagString: Untagged
@@ -13474,6 +13475,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1915534022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915534021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e661e266cf0ed1c438a8416b5d2a86e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sortingButtons: []
+  scrollviewButtons: []
 --- !u!114 &1915534023
 MonoBehaviour:
   m_ObjectHideFlags: 0
